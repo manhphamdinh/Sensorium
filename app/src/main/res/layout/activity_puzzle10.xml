@@ -19,7 +19,7 @@
         android:layout_width="match_parent"
         android:layout_height="200dp"
         android:layout_alignParentBottom="true"
-        app:period="0"
+        app:period="0.04"
         app:strokeColor="@color/puzzle10"
         app:strokeWidth="1dp" />
 </RelativeLayout>

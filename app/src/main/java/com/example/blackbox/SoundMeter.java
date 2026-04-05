@@ -15,27 +15,29 @@ public class SoundMeter {
     }
 
     public void start() {
-        if (mRecorder == null) {
-            // Sửa cách khởi tạo cho Android đời mới
+
+        if (mRecorder != null) {
+            stop();
+        }
+
+        try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 mRecorder = new MediaRecorder(context);
             } else {
                 mRecorder = new MediaRecorder();
             }
 
-            try {
-                mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-                mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-                mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-                mRecorder.setOutputFile("/dev/null");
+            mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+            mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+            mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+            java.io.File audioFile = new java.io.File(context.getCacheDir(), "temp_audio.3gp");
+            mRecorder.setOutputFile(audioFile.getAbsolutePath());
 
-                mRecorder.prepare();
-                mRecorder.start();
-            } catch (IOException | IllegalStateException e) {
-                e.printStackTrace();
-                // Nếu lỗi thì giải phóng luôn để tránh rác bộ nhớ
-                stop();
-            }
+            mRecorder.prepare();
+            mRecorder.start();
+        } catch (Exception e) { // Bắt mọi Exception để tránh crash
+            e.printStackTrace();
+            stop();
         }
     }
 

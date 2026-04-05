@@ -5,7 +5,11 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.ContentObserver;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +19,7 @@ import androidx.core.content.ContextCompat;
 public class Puzzle6Fragment extends PuzzleBaseFragment {
 
     private BroadcastReceiver receiver;
+    private ContentObserver screenshotObserver;
 
     @Override
     public int getPuzzleId() { return 6; }
@@ -27,21 +32,26 @@ public class Puzzle6Fragment extends PuzzleBaseFragment {
     @Override
     public void onResume() {
         super.onResume();
-        receiver = new BroadcastReceiver() {
-            public void onReceive(Context context, Intent intent) {
-                animation(0);
+        screenshotObserver = new ContentObserver(new Handler()) {
+            @Override
+            public void onChange(boolean selfChange, Uri uri) {
+                if (uri.toString().contains("screenshots") || uri.toString().contains("media")) {
+                    getActivity().runOnUiThread(() -> animation(0));
+                }
             }
         };
-        IntentFilter filter = new IntentFilter(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-        filter.addDataScheme("file");
-        int flags = ContextCompat.RECEIVER_EXPORTED;
 
-        ContextCompat.registerReceiver(requireContext(), receiver, filter, flags);
+        requireContext().getContentResolver().registerContentObserver(
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                true,
+                screenshotObserver
+        );
     }
-
     @Override
     public void onPause() {
         super.onPause();
-        requireContext().unregisterReceiver(receiver);
+        if (screenshotObserver != null) {
+            requireContext().getContentResolver().unregisterContentObserver(screenshotObserver);
+        }
     }
 }
