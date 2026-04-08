@@ -6,13 +6,21 @@
     android:layout_height="match_parent"
     android:clipChildren="false"
     android:clipToPadding="false"
-    android:orientation="vertical"
-    tools:context="com.patmyron.blackbox.Puzzle20Activity">
+    tools:context=".Puzzle20Fragment">
 
     <ImageView
         android:id="@+id/imageView0"
         style="@style/boxInChallenge"
+        android:layout_marginTop="30dp"
         android:layout_centerHorizontal="true"
         android:backgroundTint="@color/puzzle20" />
 
+    <ImageView
+        android:id="@+id/powerButtonImage"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:layout_centerInParent="true"
+        android:scaleType="fitCenter"
+        android:src="@drawable/power_button_icon"
+        android:alpha="0.4"/>
 </RelativeLayout>

@@ -7,14 +7,29 @@
     android:clipChildren="false"
     android:clipToPadding="false"
     android:orientation="vertical"
-    tools:context="com.example.blackbox.Puzzle11Fragment">
+    tools:context=".Puzzle11Fragment">
 
-    <ImageView
+    <FrameLayout
         android:layout_width="300dp"
         android:layout_height="300dp"
-        android:layout_centerInParent="true"
-        android:background="@drawable/circle"
-        android:backgroundTint="@color/puzzle11b" />
+        android:layout_centerInParent="true">
+
+        <!-- Moon -->
+        <View
+            android:id="@+id/moonBase"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/circle"
+            android:backgroundTint="#f9ea9d" />
+
+        <!-- Shadow -->
+        <View
+            android:id="@+id/moonShadow"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/circle"
+            android:backgroundTint="#000000" />
+    </FrameLayout>
 
     <ImageView
         android:id="@+id/imageView0"

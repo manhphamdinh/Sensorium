@@ -16,7 +16,12 @@ import androidx.core.content.ContextCompat;
 
 public class Puzzle8Fragment extends PuzzleBaseFragment {
 
-    private static final double THRESHOLD = 5.0;
+    private static final double LOW_THRESHOLD = 3.0;
+
+    private static final double HIGH_THRESHOLD = 99.0;
+
+    private static final double THRESHOLD_TOLERANCE = 0.05;
+
     private final double ballSize = 100.0;
     private BroadcastReceiver receiver;
 
@@ -34,19 +39,35 @@ public class Puzzle8Fragment extends PuzzleBaseFragment {
         receiver = new BroadcastReceiver() {
             public void onReceive(Context context, Intent intent) {
                 if (getView() == null) return;
+
+                int status = intent.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
+                boolean isCharging = (status == BatteryManager.BATTERY_STATUS_CHARGING)
+                                  || (status == BatteryManager.BATTERY_STATUS_FULL);
+
                 int rawLevel = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
                 int scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
-                int level = (rawLevel >= 0 && scale > 0) ? (rawLevel * 100) / scale : -1;
+                double level = (rawLevel >= 0 && scale > 0) ? (rawLevel * 100.0) / scale : -1;
 
-                if (level > (100 - THRESHOLD)) animation(0);
-                if (Math.abs(50 - level) < THRESHOLD) animation(1);
-                if (level < THRESHOLD) animation(2);
+                if (level >= HIGH_THRESHOLD - THRESHOLD_TOLERANCE)
+                {
+                    animation(0);
+                }
+
+                if (isCharging)
+                {
+                    animation(1);
+                }
+
+                if (level <= LOW_THRESHOLD + THRESHOLD_TOLERANCE)
+                {
+                    animation(2);
+                }
 
                 ImageView imageView = new ImageView(context);
                 ((ViewGroup) getView().findViewById(R.id.merge)).removeAllViews();
                 int deviceHeight = MainActivity.getDeviceHeightAndWidth(context).first;
-                for (int i = 0; i < ((deviceHeight / ballSize) - 1) * level / 100.0; i++) {
-                    recurse(imageView, i, 0, level);
+                for (int i = 0; i < (deviceHeight / ballSize - 1) * (level / 100.0); i++) {
+                    recurse(imageView, i, 0, (int) level);
                 }
             }
         };
@@ -66,14 +87,18 @@ public class Puzzle8Fragment extends PuzzleBaseFragment {
             ImageView imageView2 = new ImageView(requireContext());
             imageView2.setId(View.generateViewId());
             imageView2.setImageResource(R.drawable.circle);
+
             int color = (batteryLevel > 25) ? R.color.puzzle8translucent : R.color.puzzle8b;
             imageView2.setColorFilter(ContextCompat.getColor(requireContext(), color));
+
             RelativeLayout.LayoutParams params2 = new RelativeLayout.LayoutParams((int) ballSize, (int) ballSize);
             params2.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
             params2.bottomMargin = (int) (rowNumber * ballSize);
+
             if ((columnNumber % (int) ((deviceWidth / ballSize))) == 0) {
                 params2.leftMargin = (int) ballSize / 2 * (rowNumber % 2);
             }
+
             if (columnNumber != 0) {
                 params2.addRule(RelativeLayout.END_OF, imageView.getId());
             }

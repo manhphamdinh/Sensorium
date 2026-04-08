@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 public class Puzzle9Fragment extends PuzzleBaseFragment {

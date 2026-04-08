@@ -24,17 +24,17 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 public class MainActivity extends AppCompatActivity {
-
     static ArrayList<ImageView> getViewsByTag(ViewGroup root, String tag) {
-        ArrayList<ImageView> views = new ArrayList<>();
+        ArrayList<ImageView> imageViews = new ArrayList<>();
+
         final int childCount = root.getChildCount();
         for (int i = 0; i < childCount; i++) {
             final View child = root.getChildAt(i);
             if (tag.equals(child.getTag())) {
-                views.add((ImageView) child);
+                imageViews.add((ImageView) child);
             }
         }
-        return views;
+        return imageViews;
     }
 
     static Pair<Integer, Integer> getDeviceHeightAndWidth(Context context) {
@@ -49,7 +49,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                || ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            || ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED)
+        {
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.RECORD_AUDIO}, 1);
         }
@@ -60,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         SharedPreferences pref = getSharedPreferences(getString(R.string.pref), MODE_PRIVATE);
         String solved = pref.getString(getString(R.string.prefSolved), "[]");
+
         try {
             JSONArray jsonArray = new JSONArray(solved);
             HashSet<String> solvedBoxes = new HashSet<>();
@@ -68,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             ViewGroup grid = findViewById(R.id.ll);
+
             int childCount = grid.getChildCount();
             for (int i = 0; i < childCount; i++) {
                 View child = grid.getChildAt(i);
@@ -86,9 +89,10 @@ public class MainActivity extends AppCompatActivity {
 
     public void puzzleLaunch(View view) {
         String tag = (String) view.getTag();
-        // tag dạng "1:0" → lấy phần trước dấu ":"
-        String puzzleIdStr = tag.split(":")[0];
-        int puzzleId = Integer.parseInt(puzzleIdStr);
+
+        // tag có dạng "1:0", lấy phần trước dấu ":"
+        int puzzleId = Integer.parseInt(tag.split(":")[0]);
+
         Intent intent = new Intent(this, PuzzleActivity.class);
         intent.putExtra(PuzzleActivity.EXTRA_PUZZLE_ID, puzzleId);
         startActivity(intent);

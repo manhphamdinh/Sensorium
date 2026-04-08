@@ -7,7 +7,7 @@
     android:clipChildren="false"
     android:clipToPadding="false"
     android:orientation="vertical"
-    tools:context="com.patmyron.blackbox.Puzzle7Activity">
+    tools:context=".Puzzle7Fragment">
 
     <ImageView
         android:layout_width="match_parent"

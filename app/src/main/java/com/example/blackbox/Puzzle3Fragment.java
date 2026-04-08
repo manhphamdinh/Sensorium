@@ -1,10 +1,11 @@
 package com.example.blackbox;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.media.AudioDeviceCallback;
+import android.media.AudioDeviceInfo;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -12,12 +13,24 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-public class Puzzle3Fragment extends PuzzleBaseFragment implements SensorEventListener {
+public class Puzzle3Fragment extends PuzzleBaseFragment {
 
-    private SensorManager mSensorManager;
+    private BroadcastReceiver audioReceiver;
+    private AudioDeviceCallback audioDeviceCallback;
+    private final Runnable stateChecker = new Runnable() {
+        @Override
+        public void run() {
+            updateState();
+            if (isAdded() && getView() != null) {
+                getView().postDelayed(this, 500); // fallback polling
+            }
+        }
+    };
 
     @Override
-    public int getPuzzleId() { return 3; }
+    public int getPuzzleId() {
+        return 3;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -27,35 +40,117 @@ public class Puzzle3Fragment extends PuzzleBaseFragment implements SensorEventLi
     @Override
     public void onResume() {
         super.onResume();
-        mSensorManager = (SensorManager) requireContext().getSystemService(Context.SENSOR_SERVICE);
-        mSensorManager.registerListener(this,
-                mSensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY),
-                SensorManager.SENSOR_DELAY_UI);
+
+        AudioManager audioManager =
+                (AudioManager) requireContext().getSystemService(Context.AUDIO_SERVICE);
+
+        // ---- Broadcast receiver (volume + ringer fallback) ----
+        audioReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                updateState();
+            }
+        };
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(AudioManager.RINGER_MODE_CHANGED_ACTION);
+        filter.addAction("android.media.VOLUME_CHANGED_ACTION"); // still works
+        filter.addAction(Intent.ACTION_HEADSET_PLUG);
+
+        requireContext().registerReceiver(audioReceiver, filter);
+
+        // ---- Audio device callback (Bluetooth + wired real-time) ----
+        audioDeviceCallback = new AudioDeviceCallback() {
+            @Override
+            public void onAudioDevicesAdded(AudioDeviceInfo[] addedDevices) {
+                updateState();
+            }
+
+            @Override
+            public void onAudioDevicesRemoved(AudioDeviceInfo[] removedDevices) {
+                updateState();
+            }
+        };
+
+        audioManager.registerAudioDeviceCallback(audioDeviceCallback, null);
+
+        // ---- Start fallback polling (fixes edge cases) ----
+        if (getView() != null) {
+            getView().post(stateChecker);
+        }
+
+        updateState();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        mSensorManager.unregisterListener(this);
+
+        AudioManager audioManager =
+                (AudioManager) requireContext().getSystemService(Context.AUDIO_SERVICE);
+
+        if (audioReceiver != null) {
+            requireContext().unregisterReceiver(audioReceiver);
+        }
+
+        if (audioDeviceCallback != null) {
+            audioManager.unregisterAudioDeviceCallback(audioDeviceCallback);
+        }
+
+        if (getView() != null) {
+            getView().removeCallbacks(stateChecker);
+        }
     }
 
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {}
+    private void updateState() {
+        View root = getView();
+        if (root == null) return;
 
-    @Override
-    public void onSensorChanged(SensorEvent event) {
-        if (getView() == null) return;
-        AudioManager am = (AudioManager) requireContext().getSystemService(Context.AUDIO_SERVICE);
-        if (am.isWiredHeadsetOn()) animation(2);
-        if (am.getRingerMode() == AudioManager.RINGER_MODE_SILENT) animation(3);
-        int media = am.getStreamVolume(AudioManager.STREAM_RING);
-        if (media < 1) animation(1);
-        else if (media == am.getStreamMaxVolume(AudioManager.STREAM_MUSIC)) animation(0);
+        AudioManager audioManager =
+                (AudioManager) requireContext().getSystemService(Context.AUDIO_SERVICE);
 
-        ImageView fluid = getView().findViewById(R.id.fluid);
+        int volume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+        int max = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+
+        boolean isHeadphonesOn = false;
+
+        for (AudioDeviceInfo device : audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS)) {
+            int type = device.getType();
+
+            if (type == AudioDeviceInfo.TYPE_WIRED_HEADPHONES ||
+                    type == AudioDeviceInfo.TYPE_WIRED_HEADSET ||
+                    type == AudioDeviceInfo.TYPE_BLUETOOTH_A2DP ||
+                    type == AudioDeviceInfo.TYPE_BLUETOOTH_SCO) {
+
+                isHeadphonesOn = true;
+                break;
+            }
+        }
+
+        boolean isSilent =
+                audioManager.getRingerMode() == AudioManager.RINGER_MODE_SILENT
+                        || volume == 0;
+
+        // ---- Priority logic ----
+        if (isSilent) {
+            animation(3);
+        } else if (isHeadphonesOn) {
+            animation(2);
+        } else if (volume == max) {
+            animation(0);
+        } else {
+            animation(1);
+        }
+
+        // ---- Fluid UI ----
+        ImageView fluid = root.findViewById(R.id.fluid);
+
         int deviceHeight = MainActivity.getDeviceHeightAndWidth(requireContext()).first;
-        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) fluid.getLayoutParams();
-        params.height = (int) (deviceHeight * ((double) media / am.getStreamMaxVolume(AudioManager.STREAM_MUSIC)));
+
+        ViewGroup.MarginLayoutParams params =
+                (ViewGroup.MarginLayoutParams) fluid.getLayoutParams();
+
+        params.height = (int) (deviceHeight * ((float) volume / max));
         fluid.setLayoutParams(params);
     }
 }
