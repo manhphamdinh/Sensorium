@@ -1,23 +1,22 @@
 package com.example.blackbox;
 
-import android.content.Context;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
+import android.database.ContentObserver;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.view.ViewGroup.LayoutParams;
 
-public class Puzzle2Fragment extends PuzzleBaseFragment implements SensorEventListener {
+public class Puzzle2Fragment extends PuzzleBaseFragment {
 
-    private static final double TOLERANCE = 10.1;
     private static final int MAX_BRIGHTNESS = 255;
+    private static final float LOW_THRESHOLD = 10f;
+    private static final float HIGH_THRESHOLD = 245f;
 
-    private SensorManager sensorManager;
+    private ContentObserver brightnessObserver;
 
     @Override
     public int getPuzzleId() {
@@ -33,40 +32,40 @@ public class Puzzle2Fragment extends PuzzleBaseFragment implements SensorEventLi
     public void onResume() {
         super.onResume();
 
-        Context context = requireContext();
-        sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
-
-        if (sensorManager != null) {
-            Sensor gravitySensor = sensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY);
-            if (gravitySensor != null) {
-                sensorManager.registerListener(this, gravitySensor, SensorManager.SENSOR_DELAY_UI);
+        brightnessObserver = new ContentObserver(new Handler()) {
+            @Override
+            public void onChange(boolean selfChange) {
+                updateBrightnessUI();
             }
-        }
+        };
+
+        requireContext().getContentResolver().registerContentObserver(
+                Settings.System.getUriFor(Settings.System.SCREEN_BRIGHTNESS),
+                false,
+                brightnessObserver
+        );
+
+        updateBrightnessUI(); // initial update
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        if (sensorManager != null) {
-            sensorManager.unregisterListener(this);
+
+        if (brightnessObserver != null) {
+            requireContext().getContentResolver().unregisterContentObserver(brightnessObserver);
         }
     }
 
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
-        // Not used
-    }
-
-    @Override
-    public void onSensorChanged(SensorEvent event) {
+    private void updateBrightnessUI() {
         View root = getView();
         if (root == null) return;
 
         int brightness = getScreenBrightness();
-        if (brightness == -1) return;
+        if (brightness < 0) return;
 
-        handleBrightnessTriggers(brightness);
-        updateRayHeights(root, brightness);
+        handleTriggers(brightness);
+        updateRays(root, brightness);
     }
 
     private int getScreenBrightness() {
@@ -80,21 +79,28 @@ public class Puzzle2Fragment extends PuzzleBaseFragment implements SensorEventLi
         }
     }
 
-    private void handleBrightnessTriggers(int brightness) {
-        if (brightness < TOLERANCE) {
+    private void handleTriggers(int brightness) {
+        if (brightness <= LOW_THRESHOLD) {
             animation(0);
-        } else if (brightness > (MAX_BRIGHTNESS - TOLERANCE)) {
+        } else if (brightness >= HIGH_THRESHOLD) {
             animation(1);
         }
     }
 
-    private void updateRayHeights(View root, int brightness) {
+    private void updateRays(View root, int brightness) {
         ViewGroup container = root.findViewById(R.id.ll);
 
+        float ratio = brightness / (float) MAX_BRIGHTNESS;
+        int targetHeight = (int) (100 * ratio);
+
         for (ImageView ray : MainActivity.getViewsByTag(container, "rays")) {
-            ViewGroup.LayoutParams params = ray.getLayoutParams();
-            params.height = (int) (100 * (brightness / (double) MAX_BRIGHTNESS));
-            ray.setLayoutParams(params);
+            LayoutParams params = ray.getLayoutParams();
+
+            // Avoid unnecessary layout updates
+            if (params.height != targetHeight) {
+                params.height = targetHeight;
+                ray.setLayoutParams(params);
+            }
         }
     }
 }
