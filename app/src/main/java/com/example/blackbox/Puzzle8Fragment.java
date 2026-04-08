@@ -16,7 +16,7 @@ import androidx.core.content.ContextCompat;
 
 public class Puzzle8Fragment extends PuzzleBaseFragment {
 
-    private static final double LOW_THRESHOLD = 3.0;
+    private static final double LOW_THRESHOLD = 10.0;
     private static final double HIGH_THRESHOLD = 99.0;
     private static final double THRESHOLD_TOLERANCE = 0.05;
     private final double ballSize = 100.0;
