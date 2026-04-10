@@ -39,6 +39,7 @@ public class PuzzleActivity extends AppCompatActivity {
             case 9:  return new Puzzle9Fragment();
             case 10: return new Puzzle10Fragment();
             case 11: return new Puzzle11Fragment();
+            case 15: return new Puzzle15Fragment();
             case 17: return new Puzzle17Fragment();
             case 20: return new Puzzle20Fragment();
             case 29: return new Puzzle29Fragment();

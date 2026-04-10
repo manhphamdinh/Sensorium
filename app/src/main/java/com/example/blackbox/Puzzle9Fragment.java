@@ -41,7 +41,6 @@ public class Puzzle9Fragment extends PuzzleBaseFragment {
     public void onResume() {
         super.onResume();
 
-        // KIỂM TRA QUYỀN VÀ KHỞI CHẠY MIC
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.RECORD_AUDIO)
                 == PackageManager.PERMISSION_GRANTED) {
 
@@ -69,7 +68,7 @@ public class Puzzle9Fragment extends PuzzleBaseFragment {
                 @Override
                 public void run() {
                     updateMicUI();
-                    handler.postDelayed(this, 50); // Lặp lại liên tục sau mỗi 50ms
+                    handler.postDelayed(this, 50);
                 }
             };
         }
@@ -93,7 +92,7 @@ public class Puzzle9Fragment extends PuzzleBaseFragment {
         Context safeContext = getContext();
         if (rootView == null || safeContext == null) return;
 
-        // Chỉ xét thắng nếu tín hiệu âm thanh thực sự lớn hơn nhiễu
+
         if (amp > 100) {
             if (amp > (22000 - THRESHOLD) && !isSolved0) {
                 isSolved0 = true;
@@ -131,7 +130,6 @@ public class Puzzle9Fragment extends PuzzleBaseFragment {
             mergeLayout.removeAllViews();
 
             int numBalls = Math.min((int) (amp / 3000), 10);
-            // Mẹo: Nếu tiếng nhỏ quá bóng không hiện, ta ép nó hiện 1 quả cho đẹp
             if (numBalls == 0 && amp > 500) numBalls = 1;
 
             var sizeData = MainActivity.getDeviceHeightAndWidth(safeContext);

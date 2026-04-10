@@ -23,7 +23,7 @@ public class Puzzle10Fragment extends PuzzleBaseFragment {
     private SpeechRecognizer speechRecognizer;
     private Intent speechRecognizerIntent;
     private WavyLineView wavyLineView;
-    private boolean isSolved = false; // Đánh dấu đã giải xong chưa để tránh gọi animation nhiều lần
+    private boolean isSolved = false;
 
     @Override
     public int getPuzzleId() { return 10; }
@@ -42,15 +42,11 @@ public class Puzzle10Fragment extends PuzzleBaseFragment {
     @Override
     public void onResume() {
         super.onResume();
-        // Reset lại trạng thái mỗi khi vào màn hình
         isSolved = false;
-
-        // Kiểm tra quyền ghi âm trước khi khởi tạo
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.RECORD_AUDIO)
                 == PackageManager.PERMISSION_GRANTED) {
             setupSpeechRecognizer();
         } else {
-            // Xin quyền nếu chưa có
             requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO}, 100);
         }
     }
@@ -61,19 +57,15 @@ public class Puzzle10Fragment extends PuzzleBaseFragment {
             return;
         }
 
-        // Hủy instance cũ nếu có để tránh kẹt bộ nhớ
         if (speechRecognizer != null) {
             speechRecognizer.destroy();
         }
 
         speechRecognizer = SpeechRecognizer.createSpeechRecognizer(requireContext());
         speechRecognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-        // Thiết lập ngôn ngữ tiếng Anh để bắt từ "blackbox" chuẩn nhất
         speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
         speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "vi-VN");
-        // Bật tính năng trả kết quả ngay khi đang nói
         speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true);
-
         speechRecognizer.setRecognitionListener(new RecognitionListener() {
             @Override
             public void onReadyForSpeech(Bundle params) {
@@ -105,7 +97,7 @@ public class Puzzle10Fragment extends PuzzleBaseFragment {
             public void onError(int error) {
                 Log.e("Puzzle10", "Lỗi nhận diện mã số: " + error);
 
-                // Khởi động lại vòng lặp lắng nghe nếu không phải lỗi hệ thống (5) hoặc đang bận (8)
+
                 if (!isSolved && speechRecognizer != null) {
                     if (error != SpeechRecognizer.ERROR_RECOGNIZER_BUSY && error != SpeechRecognizer.ERROR_CLIENT) {
                         speechRecognizer.startListening(speechRecognizerIntent);
@@ -118,7 +110,7 @@ public class Puzzle10Fragment extends PuzzleBaseFragment {
             @Override
             public void onResults(Bundle results) {
                 boolean isWon = processSpeechResults(results);
-                // CHỈ khởi động lại mic khi đã nghe xong trọn vẹn cả câu mà vẫn sai
+
                 if (!isWon && !isSolved && speechRecognizer != null) {
                     speechRecognizer.startListening(speechRecognizerIntent);
                 }
@@ -126,14 +118,14 @@ public class Puzzle10Fragment extends PuzzleBaseFragment {
 
             @Override
             public void onPartialResults(Bundle partialResults) {
-                // KHÔNG khởi động lại mic ở đây, chỉ kiểm tra xem có trúng chưa
+
                 processSpeechResults(partialResults);
             }
 
             @Override
             public void onEvent(int eventType, Bundle params) {}
 
-            // Sửa hàm này thành kiểu trả về boolean để biết đã thắng hay chưa
+
             private boolean processSpeechResults(Bundle results) {
                 if (isSolved) return true;
 
@@ -172,11 +164,11 @@ public class Puzzle10Fragment extends PuzzleBaseFragment {
                         }
                     }
                 }
-                return false; // Chưa thắng
+                return false;
             }
         });
 
-        // Bắt đầu lắng nghe ngay lập tức (Giữ nguyên dòng này ở cuối hàm setupSpeechRecognizer)
+
         speechRecognizer.startListening(speechRecognizerIntent);
     }
 

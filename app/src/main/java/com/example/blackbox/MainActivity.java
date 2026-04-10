@@ -97,4 +97,13 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra(PuzzleActivity.EXTRA_PUZZLE_ID, puzzleId);
         startActivity(intent);
     }
+
+    public void resetGame(View view) {
+        SharedPreferences pref = getSharedPreferences(getString(R.string.pref), MODE_PRIVATE);
+        pref.edit().putString(getString(R.string.prefSolved), "[]").apply();
+        pref.edit().putFloat("puzzle15_distance", 0f).apply();
+
+        recreate();
+    }
 }
+

@@ -98,3 +98,5 @@ public class Puzzle6Fragment extends PuzzleBaseFragment {
         });
     }
 }
+
+//chạy màn 6 ở terminal: & "$env:LOCALAPPDATA\Android\Sdk\platform-tools\adb.exe" shell input keyevent 120
