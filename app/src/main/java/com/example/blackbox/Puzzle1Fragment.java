@@ -14,17 +14,66 @@ import android.widget.ImageView;
 
 import static java.lang.Math.acos;
 
+import androidx.annotation.NonNull;
+
 public class Puzzle1Fragment extends PuzzleBaseFragment implements SensorEventListener {
+
+
+
+    // BOXES ARRAY AND BOX IDS
+    private final ImageView[] boxes = new ImageView[6];
+    int[] boxIds = {
+            R.id.imageView0,
+            R.id.imageView1,
+            R.id.imageView2,
+            R.id.imageView3,
+            R.id.imageView4,
+            R.id.imageView5
+    };
+
+    // BOX POSITIONS
+    //   2
+    //   4
+    // 1   0
+    //   5
+    //   3
+    private static final int RIGHT = 0;
+    private static final int LEFT = 1;
+    private static final int TOP = 2;
+    private static final int BOTTOM = 3;
+    private static final int MIDDLE_TOP = 4;
+    private static final int MIDDLE_BOTTOM = 5;
 
     private static final double THRESHOLD = 9.7;
     private SensorManager mSensorManager;
+
+    @Override
+    protected int getTotalBoxes() {
+        return boxes.length;
+    }
 
     @Override
     public int getPuzzleId() { return 1; }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.activity_puzzle1, container, false);
+        View root = inflater.inflate(R.layout.activity_puzzle1, container, false);
+
+        // Find boxes
+        for (int i = 0; i < boxes.length; i++) {
+            boxes[i] = root.findViewById(boxIds[i]);
+        }
+
+        return root;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        for (int index : getCompletedThisRun()) {
+            applyLoadedProgress(boxes[index]);
+        }
     }
 
     @Override
@@ -65,7 +114,7 @@ public class Puzzle1Fragment extends PuzzleBaseFragment implements SensorEventLi
         float normalizedZ = z / 9.8f; // -1.0 đến +1.0
         // Khi normalizedZ = +1 → topMargin = 0        (fluid tràn đầy)
         // Khi normalizedz = -1 → topMargin = height*2 (fluid biến mất)
-        params.topMargin = (int) (deviceHeight * (0.5 - 0.5*normalizedZ));
+        params.topMargin = (int) (deviceHeight * (0.5 - 0.5 * normalizedZ));
 
         fluid.setLayoutParams(params);
 
@@ -81,12 +130,30 @@ public class Puzzle1Fragment extends PuzzleBaseFragment implements SensorEventLi
         fluid.setRotation((float) angle);
 
         // Kiểm tra hoàn thành puzzle
-        if (x < -THRESHOLD) animation(0);
-        if (x > THRESHOLD) animation(1);
-        if (y < -THRESHOLD) animation(2);
-        if (y > THRESHOLD) animation(3);
-        if (z < -THRESHOLD) animation(4);
-        if (z > THRESHOLD) animation(5);
+        if (x < -THRESHOLD) {
+            updatePuzzle(boxes[RIGHT], RIGHT);
+            Log.d("PUZZLE_1", "NEGATIVE X");
+        }
+        if (x > THRESHOLD) {
+            updatePuzzle(boxes[LEFT], LEFT);
+            Log.d("PUZZLE_1", "POSITIVE X");
+        }
+        if (y < -THRESHOLD) {
+            updatePuzzle(boxes[TOP], TOP);
+            Log.d("PUZZLE_1", "NEGATIVE Y");
+        }
+        if (y > THRESHOLD) {
+            updatePuzzle(boxes[BOTTOM], BOTTOM);
+            Log.d("PUZZLE_1", "POSITIVE Y");
+        }
+        if (z < -THRESHOLD) {
+            updatePuzzle(boxes[MIDDLE_TOP], MIDDLE_TOP);
+            Log.d("PUZZLE_1", "NEGATIVE Z");
+        }
+        if (z > THRESHOLD) {
+            updatePuzzle(boxes[MIDDLE_BOTTOM], MIDDLE_BOTTOM);
+            Log.d("PUZZLE_1", "POSITIVE Z");
+        }
 
         getView().findViewById(R.id.ll).invalidate();
     }

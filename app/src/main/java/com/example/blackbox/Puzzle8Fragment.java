@@ -12,22 +12,73 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Puzzle8Fragment extends PuzzleBaseFragment {
 
-    private static final double LOW_THRESHOLD = 10.0;
-    private static final double HIGH_THRESHOLD = 99.0;
-    private static final double THRESHOLD_TOLERANCE = 0.05;
-    private final double ballSize = 100.0;
+    // BOXES ARRAY AND BOX IDS
+    private final ImageView[] boxes = new ImageView[3];
+    int[] boxIds = {
+            R.id.imageView0,
+            R.id.imageView1,
+            R.id.imageView2,
+    };
+
+    // BOX POSITIONS
+    private static final int TOP = 0;       // MAX BATTERY
+    private static final int MIDDLE = 1;    // BATTERY CHARGING
+    private static final int BOTTOM = 2;    // LOW BATTERY
+
+    // BATTERY THRESHOLDS
+    private static final double HIGH_THRESHOLD = 100.0;
+    private static final double LOW_THRESHOLD = 17;
+
+    private static final double LOW_BATTERY_UI_THRESHOLD = 17;
+    private static final double THRESHOLD_TOLERANCE = 0.1;
+
+    // UI
+    private final double BALL_SIZE = 100.0;
+    private final int BALL_COLOR_GREEN = R.color.puzzle8translucent;
+    private final int BALL_COLOR_RED = R.color.puzzle8b;
+    private final List<ImageView> balls = new ArrayList<>();
+    private int maxRows;
+    private int maxColumns;
     private BroadcastReceiver receiver;
+
+    // SET CORE VALUES
+    @Override
+    protected int getTotalBoxes() { return boxes.length; }
 
     @Override
     public int getPuzzleId() { return 8; }
 
+    // INITIALIZE
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.activity_puzzle8, container, false);
+        View root = inflater.inflate(R.layout.activity_puzzle8, container, false);
+
+        // Find boxes
+        for (int i = 0; i < boxes.length; i++) {
+            boxes[i] = root.findViewById(boxIds[i]);
+        }
+
+        // BALLS
+        initBalls(root);
+
+        return root;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        for (int index : getCompletedThisRun()) {
+            applyLoadedProgress(boxes[index]);
+        }
     }
 
     @Override
@@ -41,33 +92,17 @@ public class Puzzle8Fragment extends PuzzleBaseFragment {
 
                 int status = intent.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
                 boolean isCharging = (status == BatteryManager.BATTERY_STATUS_CHARGING)
-                                  || (status == BatteryManager.BATTERY_STATUS_FULL);
+                        || (status == BatteryManager.BATTERY_STATUS_FULL);
 
                 int rawLevel = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
                 int scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+
+                // Convert battery level to percentage (0–100)
                 double level = (rawLevel >= 0 && scale > 0) ? (rawLevel * 100.0) / scale : -1;
 
-                if (level >= HIGH_THRESHOLD - THRESHOLD_TOLERANCE)
-                {
-                    animation(0);
-                }
+                checkBatteryConditions(level, isCharging);
 
-                if (isCharging)
-                {
-                    animation(1);
-                }
-
-                if (level <= LOW_THRESHOLD + THRESHOLD_TOLERANCE)
-                {
-                    animation(2);
-                }
-
-                ImageView imageView = new ImageView(context);
-                ((ViewGroup) getView().findViewById(R.id.merge)).removeAllViews();
-                int deviceHeight = MainActivity.getDeviceHeightAndWidth(context).first;
-                for (int i = 0; i < (deviceHeight / ballSize - 1) * (level / 100.0); i++) {
-                    recurse(imageView, i, 0, (int) level);
-                }
+                updateBalls(level); // Reflect battery level visually
             }
         };
         requireContext().registerReceiver(receiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
@@ -79,31 +114,94 @@ public class Puzzle8Fragment extends PuzzleBaseFragment {
         requireContext().unregisterReceiver(receiver);
     }
 
-    private void recurse(ImageView imageView, int rowNumber, int columnNumber, int batteryLevel) {
-        if (getView() == null) return;
+    // HANDLE BATTERY CONDITIONS
+    private void checkBatteryConditions(double level, boolean isCharging) {
+        if (level >= HIGH_THRESHOLD - THRESHOLD_TOLERANCE)
+        {
+            updatePuzzle(boxes[TOP], TOP);
+        }
+        else if (level <= LOW_THRESHOLD + THRESHOLD_TOLERANCE)
+        {
+            updatePuzzle(boxes[BOTTOM], BOTTOM);
+        }
+
+        if (isCharging) {
+            updatePuzzle(boxes[MIDDLE], MIDDLE);
+        }
+    }
+
+    // BALLS BALLS BALLS BALLS BALLS BALLS BALLS BALLS BALLS BALLS BALLS BALLS BALLS BALLS BALLS BALLS
+    private void initBalls(View root) {
+        RelativeLayout container = root.findViewById(R.id.ballsContainer);
+
+        int deviceHeight = MainActivity.getDeviceHeightAndWidth(requireContext()).first;
         int deviceWidth = MainActivity.getDeviceHeightAndWidth(requireContext()).second;
-        if (columnNumber < (deviceWidth / ballSize) - 1) {
-            ImageView imageView2 = new ImageView(requireContext());
-            imageView2.setId(View.generateViewId());
-            imageView2.setImageResource(R.drawable.circle);
 
-            int color = (batteryLevel > 25) ? R.color.puzzle8translucent : R.color.puzzle8b;
-            imageView2.setColorFilter(ContextCompat.getColor(requireContext(), color));
+        // Calculate grid capacity based on fixed ball size
+        maxRows = (int) (deviceHeight / BALL_SIZE);
+        maxColumns = (int) (deviceWidth / BALL_SIZE);
 
-            RelativeLayout.LayoutParams params2 = new RelativeLayout.LayoutParams((int) ballSize, (int) ballSize);
-            params2.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-            params2.bottomMargin = (int) (rowNumber * ballSize);
+        int totalBalls = maxColumns * maxRows;
 
-            if ((columnNumber % (int) ((deviceWidth / ballSize))) == 0) {
-                params2.leftMargin = (int) ballSize / 2 * (rowNumber % 2);
+        for (int i = 0; i < totalBalls; i++) {
+            ImageView ball = new ImageView(requireContext());
+            ball.setImageResource(R.drawable.circle);
+
+            RelativeLayout.LayoutParams params =
+                    new RelativeLayout.LayoutParams((int) BALL_SIZE, (int) BALL_SIZE);
+
+            params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM); // Stack from bottom upward
+            ball.setLayoutParams(params);
+
+            ball.setVisibility(View.GONE); // Hidden until needed
+
+            container.addView(ball);
+            balls.add(ball);
+        }
+    }
+
+    private void updateBalls(double level) {
+        if (getView() == null) return;
+
+        // Number of balls to show based on battery percentage
+        int visibleCount = (int) (balls.size() * (level / 100.0));
+
+        int currentColor = ContextCompat.getColor(
+                requireContext(),
+                (level > LOW_BATTERY_UI_THRESHOLD + THRESHOLD_TOLERANCE) ?
+                        BALL_COLOR_GREEN : BALL_COLOR_RED
+        );
+
+        for (int i = 0; i < balls.size(); i++) {
+            ImageView ball = balls.get(i);
+
+            if (i < visibleCount) {
+                ball.setVisibility(View.VISIBLE);
+
+                int currentRow = i / maxColumns;
+
+                if (currentRow >= maxRows) {
+                    ball.setVisibility(View.GONE);
+                    continue;
+                }
+
+                int column = i % maxColumns;
+
+                // Offset every other row for a staggered layout
+                int offset = (currentRow % 2 == 0) ? 0 : (int) (BALL_SIZE / 2);
+
+                RelativeLayout.LayoutParams params =
+                        (RelativeLayout.LayoutParams) ball.getLayoutParams();
+
+                params.bottomMargin = (int) (currentRow * BALL_SIZE); // Vertical stacking
+                params.leftMargin = (int) (column * BALL_SIZE + offset); // Horizontal position
+
+                ball.setLayoutParams(params);
+                ball.setColorFilter(currentColor);
+
+            } else {
+                ball.setVisibility(View.GONE);
             }
-
-            if (columnNumber != 0) {
-                params2.addRule(RelativeLayout.END_OF, imageView.getId());
-            }
-            imageView2.setLayoutParams(params2);
-            ((RelativeLayout) getView().findViewById(R.id.merge)).addView(imageView2, 0);
-            recurse(imageView2, rowNumber, columnNumber + 1, batteryLevel);
         }
     }
 }

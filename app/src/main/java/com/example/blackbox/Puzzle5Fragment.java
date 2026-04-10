@@ -15,14 +15,24 @@ import android.widget.ImageView;
 
 public class Puzzle5Fragment extends PuzzleBaseFragment implements SensorEventListener {
 
+    private ImageView airplaneBox;
     private SensorManager mSensorManager;
+
+    // SETUP
+    @Override
+    protected int getTotalBoxes() { return 1; }
 
     @Override
     public int getPuzzleId() { return 5; }
 
+    // INITIALIZE
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.activity_puzzle5, container, false);
+        View root = inflater.inflate(R.layout.activity_puzzle5, container, false);
+
+        airplaneBox = root.findViewById(R.id.imageView0);
+
+        return root;
     }
 
     @Override
@@ -48,7 +58,7 @@ public class Puzzle5Fragment extends PuzzleBaseFragment implements SensorEventLi
         if (getView() == null) return;
         if (Settings.Global.getInt(requireContext().getContentResolver(),
                 Settings.Global.AIRPLANE_MODE_ON, 0) == 1) {
-            animation(0);
+            updatePuzzle(airplaneBox);
             ImageView imageView = getView().findViewById(R.id.wifi);
             imageView.setBackgroundResource(R.drawable.animationwifi);
             ((AnimationDrawable) imageView.getBackground()).start();

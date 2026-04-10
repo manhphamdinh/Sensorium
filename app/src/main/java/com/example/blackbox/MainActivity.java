@@ -61,24 +61,14 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // INITIALIZE AUDIO MANAGER
-        AudioManager.init(this);
-
-        // INITIALIZE LEVEL BUTTONS
-        ViewGroup grid = findViewById(R.id.ll);
-        for (int i = 0; i < grid.getChildCount(); i++) {
-            View child = grid.getChildAt(i);
-
-            if (child instanceof ImageButton) {
-                child.setOnClickListener(this::puzzleLaunch);
-            }
-        }
+        AudioHandler.init(this);
     }
 
     // UPDATE UI WHEN USER GOES BACK TO MAIN MENU
     @Override
     protected void onResume() {
         super.onResume();
-        AudioManager.startBgm(this);  // Play BGM in menu
+        AudioHandler.startBgm(this);  // Play BGM in menu
 
         // UPDATE SOLVED BOXES
         SharedPreferences pref = getSharedPreferences(getString(R.string.pref), MODE_PRIVATE);
@@ -117,13 +107,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
 
-        AudioManager.pauseBgm();
+        AudioHandler.pauseBgm();
     }
 
     // LAUNCH PUZZLE
     public void puzzleLaunch(View view) {
-        AudioManager.pauseBgm(); // Stop music BEFORE entering level
-        AudioManager.playLevelSelectSFX();  // Level select sound
+        AudioHandler.pauseBgm();            // Stop music BEFORE entering level
+        AudioHandler.playLevelSelectSFX();  // Level select sound
 
         String tag = (String) view.getTag();
 

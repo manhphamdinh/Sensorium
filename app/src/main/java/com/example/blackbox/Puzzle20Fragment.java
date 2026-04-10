@@ -6,27 +6,38 @@ import android.os.PowerManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
-import androidx.annotation.Nullable;
+import android.widget.ImageView;
 
 public class Puzzle20Fragment extends PuzzleBaseFragment {
 
+    private ImageView powerBox;
+
     private boolean screenWasOff = false;
+
+    // SETUP
+    @Override
+    protected int getTotalBoxes() {
+        return 1;
+    }
 
     @Override
     public int getPuzzleId() {
         return 20;
     }
 
+    // INITIALIZE
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.activity_puzzle20, container, false);
+        View root = inflater.inflate(R.layout.activity_puzzle20, container, false);
+
+        powerBox = root.findViewById(R.id.imageView0);
+
+        return root;
     }
 
     @Override
     public void onPause() {
         super.onPause();
-
         PowerManager powerManager = (PowerManager) requireContext().getSystemService(Context.POWER_SERVICE);
 
         // Check if screen is actually off
@@ -40,7 +51,7 @@ public class Puzzle20Fragment extends PuzzleBaseFragment {
         super.onResume();
 
         if (screenWasOff) {
-            animation(0);
+            updatePuzzle(powerBox);
             screenWasOff = false;
         }
     }

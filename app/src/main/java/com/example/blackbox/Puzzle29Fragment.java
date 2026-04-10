@@ -1,70 +1,134 @@
 package com.example.blackbox;
 
+import android.animation.ValueAnimator;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
-import java.util.Timer;
-import java.util.TimerTask;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 public class Puzzle29Fragment extends PuzzleBaseFragment {
 
-    private static final int THRESHOLD = 5000;
-    private Timer timer;
+    private ImageView holdBox;
+    private View bg;
+
+    // Duration the user must hold to complete the puzzle
+    private static final int THRESHOLD = 5000; // ms
+
+    // Handler tied to main thread for delayed completion trigger
+    private final Handler handler = new Handler(Looper.getMainLooper());
+
+    private Runnable holdRunnable;
+    private ValueAnimator colorAnimator;
 
     @Override
-    public int getPuzzleId() { return 29; }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.activity_puzzle29, container, false);
+    protected int getTotalBoxes() {
+        return 1;
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public int getPuzzleId() {
+        return 29;
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View root = inflater.inflate(R.layout.activity_puzzle29, container, false);
+
+        holdBox = root.findViewById(R.id.imageView0);
+        bg = root.findViewById(R.id.bg);
+
+        return root;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         view.setOnTouchListener((v, event) -> {
-            switch (event.getAction() & MotionEvent.ACTION_MASK) {
-                case MotionEvent.ACTION_DOWN: {
-                    timer = new Timer();
-                    timer.schedule(new TimerTask() {
-                        @Override
-                        public void run() {
-                            animation(0);
-                        }
-                    }, THRESHOLD);
-                    final int reps = 50;
-                    for (int i = 0; i < reps; i++) {
-                        final int step = i;
-                        timer.schedule(new TimerTask() {
-                            @Override
-                            public void run() {
-                                if (getActivity() == null || getView() == null) return;
-                                int r = 0x94 * step / reps;
-                                int g = 0x46 * step / reps;
-                                int b = 0x7C * step / reps;
-                                String hex = String.format("#99%02X%02X%02X", r, g, b);
-                                getActivity().runOnUiThread(() ->
-                                        getView().findViewById(R.id.bg)
-                                                .setBackgroundColor(Color.parseColor(hex))
-                                );
-                            }
-                        }, (long) step * THRESHOLD / reps);
-                    }
-                    break;
-                }
-                case MotionEvent.ACTION_UP: {
-                    if (getView() != null)
-                        getView().findViewById(R.id.bg)
-                                .setBackgroundColor(requireContext().getResources().getColor(R.color.bg, null));
-                    if (timer != null) timer.cancel();
-                    break;
-                }
+            switch (event.getActionMasked()) {
+
+                case MotionEvent.ACTION_DOWN:
+                    startHold();
+                    return true;
+
+                case MotionEvent.ACTION_UP:
+                    cancelHold();
+                    resetBackground();
+
+                    // Ensures accessibility + click listeners still work
+                    v.performClick();
+                    return true;
+
+                case MotionEvent.ACTION_CANCEL:
+                    // Happens when touch is interrupted (e.g., parent intercepts)
+                    cancelHold();
+                    resetBackground();
+                    return true;
             }
-            return true;
+            return false;
         });
+    }
+
+    private void startHold() {
+        // Start visual feedback immediately
+        startColorAnimation();
+
+        // If user holds long enough, mark puzzle as completed
+        holdRunnable = () -> updatePuzzle(holdBox);
+        handler.postDelayed(holdRunnable, THRESHOLD);
+    }
+
+    private void cancelHold() {
+        // Prevent completion if user releases early
+        if (holdRunnable != null) {
+            handler.removeCallbacks(holdRunnable);
+        }
+
+        stopColorAnimation();
+    }
+
+    private void startColorAnimation() {
+        int startColor = Color.TRANSPARENT;
+        int endColor = Color.parseColor("#9994467C");
+
+        colorAnimator = ValueAnimator.ofArgb(startColor, endColor);
+        colorAnimator.setDuration(THRESHOLD);
+
+        // Gradually darken background while holding
+        colorAnimator.addUpdateListener(animation ->
+                bg.setBackgroundColor((int) animation.getAnimatedValue())
+        );
+
+        colorAnimator.start();
+    }
+
+    private void stopColorAnimation() {
+        if (colorAnimator != null) {
+            colorAnimator.cancel();
+        }
+    }
+
+    private void resetBackground() {
+        // Restore original background color when hold is cancelled
+        bg.setBackgroundColor(
+                requireContext().getResources().getColor(R.color.bg, null)
+        );
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        // Avoid leaks and orphan callbacks when view is destroyed
+        cancelHold();
+        stopColorAnimation();
     }
 }

@@ -12,6 +12,7 @@
         <item name="android:onClick">puzzleLaunch</item>
         <item name="android:scaleType">fitXY</item>
         <item name="srcCompat">@drawable/dot</item>
+        <item name="android:importantForAccessibility">no</item>
     </style>
 
     <style name="sunRay">

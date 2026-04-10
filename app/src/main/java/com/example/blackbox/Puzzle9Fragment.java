@@ -12,29 +12,67 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
 public class Puzzle9Fragment extends PuzzleBaseFragment {
 
-    private static final double THRESHOLD = 2000;
-    private final int ballSize = 300;
+    // BOXES ARRAY AND BOX IDS
+    private final ImageView[] boxes = new ImageView[3];
+    int[] boxIds = {
+            R.id.imageView0,
+            R.id.imageView1,
+            R.id.imageView2,
+    };
+
+    // BOX POSITIONS
+    private static final int TOP = 0;    // High amped box
+    private static final int MIDDLE = 1;   // Mid amped box
+    private static final int BOTTOM = 2;   // Low amped Box
+
+
+    // AMPLITUDE THRESHOLDS
+    private static final double HIGH_THRESHOLD = 22000;
+    private static final double MID_THRESHOLD = 10000;
+    private static final double LOW_THRESHOLD = 2000;
+    private static final double TOLERANCE = 500;
+    private static final double NOISE = 100;
+
+    // UI
+    private static final int BALL_SIZE = 300;
+
+    // SOUND METER
     private SoundMeter sm;
 
     // Tạo Handler để tự động cập nhật Mic mỗi 50 mili-giây
-    private Handler handler = new Handler(Looper.getMainLooper());
+    private final Handler handler = new Handler(Looper.getMainLooper());
     private Runnable pollMicRunnable;
 
-    // Biến trạng thái để chỉ gọi animation 1 lần cho mỗi ô
-    private boolean isSolved0 = false;
-    private boolean isSolved1 = false;
-    private boolean isSolved2 = false;
+    @Override
+    protected int getTotalBoxes() { return boxes.length; }
 
     @Override
     public int getPuzzleId() { return 9; }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.activity_puzzle9, container, false);
+        View root = inflater.inflate(R.layout.activity_puzzle9, container, false);
+
+        // Initialize boxes
+        for (int i = 0; i < boxes.length; i++) {
+            boxes[i] = root.findViewById(boxIds[i]);
+        }
+
+        return root;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        for (int index : getCompletedThisRun()) {
+            applyLoadedProgress(boxes[index]);
+        }
     }
 
     @Override
@@ -94,21 +132,18 @@ public class Puzzle9Fragment extends PuzzleBaseFragment {
         if (rootView == null || safeContext == null) return;
 
         // Chỉ xét thắng nếu tín hiệu âm thanh thực sự lớn hơn nhiễu
-        if (amp > 100) {
-            if (amp > (22000 - THRESHOLD) && !isSolved0) {
-                isSolved0 = true;
-                animation(0);
+        if (amp > NOISE) {
+            if (amp >= (HIGH_THRESHOLD - TOLERANCE)) {
+                updatePuzzle(boxes[TOP], TOP);
             }
-            if (Math.abs(amp - 10000) < THRESHOLD && !isSolved1) {
-                isSolved1 = true;
-                animation(1);
+            if (amp >= MID_THRESHOLD - TOLERANCE && amp <= MID_THRESHOLD + TOLERANCE) {
+                updatePuzzle(boxes[MIDDLE], MIDDLE);
             }
-            if (amp > 100 && amp < THRESHOLD && !isSolved2) {
-                isSolved2 = true;
-                animation(2);
+            if (amp <= LOW_THRESHOLD + TOLERANCE) {
+                updatePuzzle(boxes[BOTTOM], BOTTOM);
             }
 
-            if (isSolved0 && isSolved1 && isSolved2) {
+            if (isPuzzleCompletedThisRun()) {
 
                 // 1. Dừng ngay việc đo mic để tiết kiệm pin và tránh lỗi
                 stopPollingMic();
@@ -119,6 +154,7 @@ public class Puzzle9Fragment extends PuzzleBaseFragment {
                 // 2. Tạo độ trễ 1.5 giây để người chơi chiêm ngưỡng cả 3 ô cùng sáng
                 new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
                     if (getActivity() != null) {
+
                         // Tự động quay về màn hình chính
                         getActivity().finish();
                     }
@@ -126,11 +162,12 @@ public class Puzzle9Fragment extends PuzzleBaseFragment {
             }
         }
 
-        RelativeLayout mergeLayout = rootView.findViewById(R.id.merge);
-        if (mergeLayout != null) {
-            mergeLayout.removeAllViews();
+        RelativeLayout ballsContainer = rootView.findViewById(R.id.ballsContainer);
+        if (ballsContainer != null) {
+            ballsContainer.removeAllViews();
 
             int numBalls = Math.min((int) (amp / 3000), 10);
+
             // Mẹo: Nếu tiếng nhỏ quá bóng không hiện, ta ép nó hiện 1 quả cho đẹp
             if (numBalls == 0 && amp > 500) numBalls = 1;
 
@@ -143,14 +180,14 @@ public class Puzzle9Fragment extends PuzzleBaseFragment {
                 imageView.setImageResource(R.drawable.circle);
                 imageView.setColorFilter(ContextCompat.getColor(safeContext, R.color.puzzle9translucent));
 
-                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ballSize, ballSize);
-                int maxTop = Math.max(1, deviceHeight - ballSize);
-                int maxLeft = Math.max(1, deviceWidth - ballSize);
+                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(BALL_SIZE, BALL_SIZE);
+                int maxTop = Math.max(1, deviceHeight - BALL_SIZE);
+                int maxLeft = Math.max(1, deviceWidth - BALL_SIZE);
 
                 params.topMargin = (int) (Math.random() * maxTop);
                 params.leftMargin = (int) (Math.random() * maxLeft);
 
-                mergeLayout.addView(imageView);
+                ballsContainer.addView(imageView);
             }
         }
     }

@@ -12,19 +12,29 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 public class Puzzle6Fragment extends PuzzleBaseFragment {
 
+    private ImageView screenshotBox;    // Screenshot screenshotBox
     private ContentObserver screenshotObserver;
     private Activity.ScreenCaptureCallback screenCaptureCallback; // API mới của Android 14
     private boolean isSolved = false;
+
+    @Override
+    protected int getTotalBoxes() { return 1; }
 
     @Override
     public int getPuzzleId() { return 6; }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.activity_puzzle6, container, false);
+        View root = inflater.inflate(R.layout.activity_puzzle6, container, false);
+
+        // Find screenshotBox
+        screenshotBox = root.findViewById(R.id.imageView0);
+
+        return root;
     }
 
     @Override
@@ -42,10 +52,12 @@ public class Puzzle6Fragment extends PuzzleBaseFragment {
                 }
             };
             if (getActivity() != null) {
+
                 // Đăng ký nhận diện chụp màn hình (Không cần xin quyền trong Manifest!)
                 getActivity().registerScreenCaptureCallback(requireContext().getMainExecutor(), screenCaptureCallback);
             }
         }
+
         // CÁCH CŨ: Dành cho Android 13 trở xuống (Đề phòng sau này bạn chạy trên máy cũ)
         else {
             screenshotObserver = new ContentObserver(new Handler(Looper.getMainLooper())) {
@@ -69,6 +81,7 @@ public class Puzzle6Fragment extends PuzzleBaseFragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+
         // Dời việc hủy đăng ký xuống tận lúc màn hình này bị đóng hẳn
         // Nhờ vậy, khi bạn mở Đa nhiệm hoặc kéo thanh thông báo xuống, nó vẫn tiếp tục "nghe"
         if (Build.VERSION.SDK_INT >= 34 && screenCaptureCallback != null && getActivity() != null) {
@@ -87,7 +100,7 @@ public class Puzzle6Fragment extends PuzzleBaseFragment {
 
         getActivity().runOnUiThread(() -> {
             Log.d("Puzzle6", "CHÍNH XÁC! Gọi animation qua màn!");
-            animation(0); // Làm sáng ô vuông
+            updatePuzzle(screenshotBox);
 
             // Đợi 1.5 giây để nhìn thấy ô sáng lên rồi tự động quay về bản đồ chính
             new Handler(Looper.getMainLooper()).postDelayed(() -> {

@@ -16,16 +16,25 @@ import android.widget.ImageView;
 
 public class Puzzle4Fragment extends PuzzleBaseFragment implements SensorEventListener {
 
+    private ImageView proximityBox;
     private static final double THRESHOLD = 4.0;
     private SensorManager mSensorManager;
     private Animation mAnimation;
+
+    @Override
+    protected int getTotalBoxes() { return 1; }
 
     @Override
     public int getPuzzleId() { return 4; }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.activity_puzzle4, container, false);
+
+        View root = inflater.inflate(R.layout.activity_puzzle4, container, false);
+
+        proximityBox = root.findViewById(R.id.imageView0);
+
+        return root;
     }
 
     @Override
@@ -42,7 +51,7 @@ public class Puzzle4Fragment extends PuzzleBaseFragment implements SensorEventLi
         mAnimation.setRepeatCount(Animation.INFINITE);
         mAnimation.setRepeatMode(Animation.REVERSE);
         if (getView() != null)
-            getView().findViewById(R.id.imageView).startAnimation(mAnimation);
+            getView().findViewById(R.id.proximityCircle).startAnimation(mAnimation);
     }
 
     @Override
@@ -57,14 +66,14 @@ public class Puzzle4Fragment extends PuzzleBaseFragment implements SensorEventLi
     @Override
     public void onSensorChanged(SensorEvent event) {
         if (getView() == null) return;
-        ImageView iv = getView().findViewById(R.id.imageView);
+        ImageView proximityCircle = getView().findViewById(R.id.proximityCircle);
         if (event.values[0] < THRESHOLD) {
-            iv.clearAnimation();
-            iv.setVisibility(View.INVISIBLE);
-            animation(0);
+            proximityCircle.clearAnimation();
+            proximityCircle.setVisibility(View.INVISIBLE);
+            updatePuzzle(proximityBox);
         } else {
-            iv.startAnimation(mAnimation);
-            iv.setVisibility(View.VISIBLE);
+            proximityCircle.startAnimation(mAnimation);
+            proximityCircle.setVisibility(View.VISIBLE);
         }
     }
 }

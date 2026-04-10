@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -20,17 +21,25 @@ import java.util.ArrayList;
 
 public class Puzzle10Fragment extends PuzzleBaseFragment {
 
+    private ImageView speechBox;
     private SpeechRecognizer speechRecognizer;
     private Intent speechRecognizerIntent;
     private WavyLineView wavyLineView;
-    private boolean isSolved = false; // Đánh dấu đã giải xong chưa để tránh gọi animation nhiều lần
+
+    @Override
+    protected int getTotalBoxes() { return 1; }
 
     @Override
     public int getPuzzleId() { return 10; }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.activity_puzzle10, container, false);
+        View root = inflater.inflate(R.layout.activity_puzzle10, container, false);
+
+        // Initialize speech speechBox
+        speechBox = root.findViewById(R.id.imageView0);
+
+        return root;
     }
 
     @Override
@@ -42,8 +51,6 @@ public class Puzzle10Fragment extends PuzzleBaseFragment {
     @Override
     public void onResume() {
         super.onResume();
-        // Reset lại trạng thái mỗi khi vào màn hình
-        isSolved = false;
 
         // Kiểm tra quyền ghi âm trước khi khởi tạo
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.RECORD_AUDIO)
@@ -68,9 +75,11 @@ public class Puzzle10Fragment extends PuzzleBaseFragment {
 
         speechRecognizer = SpeechRecognizer.createSpeechRecognizer(requireContext());
         speechRecognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+
         // Thiết lập ngôn ngữ tiếng Anh để bắt từ "blackbox" chuẩn nhất
         speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
         speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "vi-VN");
+
         // Bật tính năng trả kết quả ngay khi đang nói
         speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true);
 
@@ -85,8 +94,9 @@ public class Puzzle10Fragment extends PuzzleBaseFragment {
 
             @Override
             public void onRmsChanged(float rmsdB) {
+
                 // Làm cho sóng lượn theo độ lớn của giọng nói
-                if (wavyLineView != null && !isSolved) {
+                if (wavyLineView != null && !isPuzzleCompletedThisRun()) {
                     int amplitude = (int) Math.max(0, rmsdB * 10); // Nhân 10 để sóng nhấp nhô rõ hơn
                     wavyLineView.setAmplitude(amplitude);
                     wavyLineView.setPeriod(0.05f); // Tốc độ lượn sóng
@@ -106,11 +116,12 @@ public class Puzzle10Fragment extends PuzzleBaseFragment {
                 Log.e("Puzzle10", "Lỗi nhận diện mã số: " + error);
 
                 // Khởi động lại vòng lặp lắng nghe nếu không phải lỗi hệ thống (5) hoặc đang bận (8)
-                if (!isSolved && speechRecognizer != null) {
+                if (!isPuzzleCompletedThisRun() && speechRecognizer != null) {
                     if (error != SpeechRecognizer.ERROR_RECOGNIZER_BUSY && error != SpeechRecognizer.ERROR_CLIENT) {
                         speechRecognizer.startListening(speechRecognizerIntent);
                     }
                 }
+
                 // Khi im lặng hoặc lỗi thì cho sóng phẳng lại
                 if (wavyLineView != null) wavyLineView.setAmplitude(0);
             }
@@ -118,14 +129,16 @@ public class Puzzle10Fragment extends PuzzleBaseFragment {
             @Override
             public void onResults(Bundle results) {
                 boolean isWon = processSpeechResults(results);
+
                 // CHỈ khởi động lại mic khi đã nghe xong trọn vẹn cả câu mà vẫn sai
-                if (!isWon && !isSolved && speechRecognizer != null) {
+                if (!isWon && !isPuzzleCompletedThisRun() && speechRecognizer != null) {
                     speechRecognizer.startListening(speechRecognizerIntent);
                 }
             }
 
             @Override
             public void onPartialResults(Bundle partialResults) {
+
                 // KHÔNG khởi động lại mic ở đây, chỉ kiểm tra xem có trúng chưa
                 processSpeechResults(partialResults);
             }
@@ -135,7 +148,7 @@ public class Puzzle10Fragment extends PuzzleBaseFragment {
 
             // Sửa hàm này thành kiểu trả về boolean để biết đã thắng hay chưa
             private boolean processSpeechResults(Bundle results) {
-                if (isSolved) return true;
+                if (isPuzzleCompletedThisRun()) return true;
 
                 ArrayList<String> matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
                 if (matches != null) {
@@ -149,8 +162,7 @@ public class Puzzle10Fragment extends PuzzleBaseFragment {
 
                         if (spokenText.contains("hộp đen") || spokenText.contains("hộp")) {
                             Log.d("Puzzle10", "CHÍNH XÁC! GỌI ANIMATION QUA MÀN!");
-                            isSolved = true;
-                            animation(0);
+                            updatePuzzle(speechBox);
 
                             if (wavyLineView != null) {
                                 wavyLineView.setAmplitude(0);

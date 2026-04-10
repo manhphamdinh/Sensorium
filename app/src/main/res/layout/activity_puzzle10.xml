@@ -11,6 +11,7 @@
     tools:context=".Puzzle10Fragment">
 
     <ImageView
+        android:id="@+id/imageView0"
         style="@style/centerBoxInChallenge"
         android:backgroundTint="@color/puzzle10" />
 
