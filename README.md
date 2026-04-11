@@ -14,5 +14,5 @@
   - Old logic is now split into Data update, Audio (new) and UI.
   - No longer relies on getIdentifier() (slow). Receives box (ImageView) and its index (int) directly.
 - All Puzzle Fragments have been updated to accommodate changes to Gameplay loop and Base Fragment while retaining their original logic.
-- Puzzle 1 and puzzle 29 logic has been rewritten due to unfathomably abysmally dogshit code.
+- Puzzle 1 and puzzle 29 logic has been rewritten due to unfathomably abysmal dogshit code.
 - Debug mode is added to Puzzle 7 for testing. 
