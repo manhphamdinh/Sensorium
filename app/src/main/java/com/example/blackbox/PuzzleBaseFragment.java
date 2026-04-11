@@ -15,9 +15,12 @@ import java.util.HashSet;
 public abstract class PuzzleBaseFragment extends Fragment {
 
     // Runtime only
+    /// Set of completed boxes in current puzzle
     private final HashSet<Integer> completedThisRun = new HashSet<>();
+
+    /// Current puzzle status
     private boolean puzzleCompletedThisRun = false;
-    private PuzzleProgression progression;
+    private PuzzleProgress progress;
     private PuzzleCompletion completion;
 
     // CORE
@@ -26,18 +29,20 @@ public abstract class PuzzleBaseFragment extends Fragment {
     }
     protected void updatePuzzle(ImageView puzzleBox, int boxIndex) {
 
+        // Prevent replaying audio
         if (completedThisRun.contains(boxIndex)) { return; }
-        completedThisRun.add(boxIndex);
+            completedThisRun.add(boxIndex);
 
         Activity activity = getActivity();
         if (activity == null) { return; }
 
-        if (progression.isComplete()) { return; }
+        if (progress.isComplete()) { return; }
 
         // Save states
         completion.markCompleted(getPuzzleId(), boxIndex);
-        progression.save(boxIndex);
+        progress.savePuzzleProgress(boxIndex);
 
+        // Render UI + AUDIO
         activity.runOnUiThread(() -> {
             playAnimation(puzzleBox);
             handleAudio();
@@ -46,7 +51,7 @@ public abstract class PuzzleBaseFragment extends Fragment {
 
     // AUDIO
     private void handleAudio() {
-        if (progression.isComplete()) {
+        if (progress.isComplete()) {
             if (!puzzleCompletedThisRun) {
                 puzzleCompletedThisRun = true;
                 AudioHandler.playPuzzleCompleteSFX();
@@ -63,7 +68,7 @@ public abstract class PuzzleBaseFragment extends Fragment {
         ((AnimationDrawable) puzzleBox.getBackground()).start();
     }
 
-    protected void applyLoadedProgress(ImageView box) {
+    protected void applyCurrentProgress(ImageView box) {
         playAnimation(box);
     }
 
@@ -75,23 +80,28 @@ public abstract class PuzzleBaseFragment extends Fragment {
         Context context = getContext();
         if (context == null) { return; }
 
-        progression = new PuzzleProgression(context, getPuzzleId(), getTotalBoxes());
+        progress = new PuzzleProgress(context, getPuzzleId(), getTotalBoxes());
         completion = new PuzzleCompletion(context, getPuzzleId());
 
+        if (progress.isComplete()) {
+            progress.resetPuzzleProgress();
+            return;
+        }
+
         completedThisRun.clear();
-        completedThisRun.addAll(progression.load());
+        completedThisRun.addAll(progress.getPuzzleCurrentProgress());
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
 
-        if (progression.isComplete()) {
-            progression.reset();
+        if (progress.isComplete()) {
+            progress.resetPuzzleProgress();
         }
     }
 
-    // ABSTRACT
+    // UTILITIES
     protected abstract int getPuzzleId();
     protected abstract int getTotalBoxes();
 

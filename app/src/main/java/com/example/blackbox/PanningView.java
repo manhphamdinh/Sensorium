@@ -186,7 +186,7 @@ public class PanningView extends FrameLayout {
                 if (dx > touchSlop || dy > touchSlop) {
                     isScrolling = true;
 
-                    // 🔥 CRITICAL: sync drag starting point
+                    // Sync drag starting point
                     lastX = ev.getX();
                     lastY = ev.getY();
 

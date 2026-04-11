@@ -77,7 +77,7 @@ public class Puzzle11Fragment extends PuzzleBaseFragment {
         super.onViewCreated(view, savedInstanceState);
 
         for (int index : getCompletedThisRun()) {
-            applyLoadedProgress(boxes[index]);
+            applyCurrentProgress(boxes[index]);
         }
 
         shadow = view.findViewById(R.id.moonShadow);

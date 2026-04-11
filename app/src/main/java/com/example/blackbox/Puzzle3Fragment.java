@@ -77,7 +77,7 @@ public class Puzzle3Fragment extends PuzzleBaseFragment {
         super.onViewCreated(view, savedInstanceState);
 
         for (int index : getCompletedThisRun()) {
-            applyLoadedProgress(boxes[index]);
+            applyCurrentProgress(boxes[index]);
         }
     }
 

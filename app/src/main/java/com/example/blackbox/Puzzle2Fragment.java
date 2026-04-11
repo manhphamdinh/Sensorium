@@ -72,7 +72,7 @@ public class Puzzle2Fragment extends PuzzleBaseFragment {
 
         // Re-apply completed boxes from this run
         for (int index : getCompletedThisRun()) {
-            applyLoadedProgress(boxes[index]);
+            applyCurrentProgress(boxes[index]);
         }
     }
 

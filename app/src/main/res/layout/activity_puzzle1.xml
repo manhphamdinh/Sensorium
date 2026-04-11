@@ -7,6 +7,27 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".Puzzle1Fragment">
 
+    <com.example.blackbox.FluidView
+        android:id="@+id/fluid"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <ImageView
+        android:id="@+id/bubbleBottom"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:src="@drawable/bubble"
+        android:layout_gravity="center_horizontal"
+        android:alpha="0.5"/>
+
+    <ImageView
+        android:id="@+id/bubbleTop"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:src="@drawable/bubble"
+        android:layout_gravity="center_horizontal"
+        android:alpha="0.5"/>
+
     <RelativeLayout
         android:id="@+id/ll"
         android:layout_width="match_parent"
@@ -61,10 +82,5 @@
 
     </RelativeLayout>
 
-    <ImageView
-        android:id="@+id/fluid"
-        android:layout_width="1000000dp"
-        android:layout_height="1000000dp"
-        android:layout_marginLeft="-5000px"
-        android:background="@color/puzzle1translucent" />
+
 </FrameLayout>

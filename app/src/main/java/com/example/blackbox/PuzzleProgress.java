@@ -8,19 +8,19 @@ import org.json.JSONException;
 
 import java.util.HashSet;
 
-public class PuzzleProgression {
+public class PuzzleProgress {
 
     private final Context context;
     private final String progressKey;
     private final int totalBoxes;
 
-    public PuzzleProgression(Context context, int puzzleId, int totalBoxes) {
+    public PuzzleProgress(Context context, int puzzleId, int totalBoxes) {
         this.context = context;
         this.progressKey = "progress_" + puzzleId;
         this.totalBoxes = totalBoxes;
     }
 
-    public void save(int boxIndex) {
+    public void savePuzzleProgress(int boxIndex) {
         SharedPreferences pref = context.getSharedPreferences(
                 context.getString(R.string.pref), Context.MODE_PRIVATE
         );
@@ -40,7 +40,7 @@ public class PuzzleProgression {
         } catch (JSONException ignored) {}
     }
 
-    public HashSet<Integer> load() {
+    public HashSet<Integer> getPuzzleCurrentProgress() {
         SharedPreferences pref = context.getSharedPreferences(
                 context.getString(R.string.pref), Context.MODE_PRIVATE
         );
@@ -60,10 +60,10 @@ public class PuzzleProgression {
     }
 
     public boolean isComplete() {
-        return load().size() == totalBoxes;
+        return getPuzzleCurrentProgress().size() == totalBoxes;
     }
 
-    public void reset() {
+    public void resetPuzzleProgress() {
         SharedPreferences pref = context.getSharedPreferences(
                 context.getString(R.string.pref), Context.MODE_PRIVATE
         );

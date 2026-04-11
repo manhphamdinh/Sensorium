@@ -110,6 +110,13 @@ public class MainActivity extends AppCompatActivity {
         AudioHandler.pauseBgm();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        AudioHandler.release();
+    }
+
     // LAUNCH PUZZLE
     public void puzzleLaunch(View view) {
         AudioHandler.pauseBgm();            // Stop music BEFORE entering level
