@@ -1,291 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.example.blackbox.PanningView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.example.blackbox.PanningView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/panningView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/bg">
+    android:background="@color/bg"
+    android:contentDescription="@string/panning_view_description">
 
     <GridLayout
         android:id="@+id/ll"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:clipToPadding="false"
-        android:columnCount="7"
-        android:padding="400dp">
+        android:paddingLeft="375dp"
+        android:paddingTop="450dp"
+        android:paddingRight="375dp"
+        android:paddingBottom="450dp"
+        android:columnCount="6"
+        android:clipChildren="false"
+        android:clipToPadding="false">
 
-        <ImageView
-            android:layout_width="75dp"
-            android:layout_height="75dp" />
+        <!-- ROW 1 -->
+        <Space android:layout_width="75dp" android:layout_height="75dp" />
+        <ImageButton style="@style/mainScreenPuzzle" android:tag="9:0" app:tint="@color/puzzle9" />
+        <Space android:layout_width="75dp" android:layout_height="75dp" />
+        <ImageButton style="@style/mainScreenPuzzle" android:tag="11:0" app:tint="@color/puzzle11" />
+        <ImageButton style="@style/mainScreenPuzzle" android:tag="11:1" app:tint="@color/puzzle11" />
+        <ImageButton style="@style/mainScreenPuzzle" android:tag="10:0" app:tint="@color/puzzle10" />
 
-        <ImageButton
-            style="@style/mainScreenPuzzle"
-            android:tag="9:0"
-            app:tint="@color/puzzle9" />
+        <!-- ROW 2 -->
+        <Space android:layout_width="75dp" android:layout_height="75dp" />
+        <ImageButton style="@style/mainScreenPuzzle" android:tag="9:1" app:tint="@color/puzzle9" />
+        <ImageButton style="@style/mainScreenPuzzle" android:tag="1:0" app:tint="@color/puzzle1" />
+        <ImageButton style="@style/mainScreenPuzzle" android:tag="1:1" app:tint="@color/puzzle1" />
+        <ImageButton style="@style/mainScreenPuzzle" android:tag="7:0" app:tint="@color/puzzle7" />
+        <ImageButton style="@style/mainScreenPuzzle" android:tag="8:0" app:tint="@color/puzzle8" />
 
-        <ImageView
-            android:layout_width="75dp"
-            android:layout_height="75dp" />
+        <!-- ROW 3 -->
+        <ImageButton style="@style/mainScreenPuzzle" android:tag="29:0" app:tint="@color/puzzle29" />
+        <ImageButton style="@style/mainScreenPuzzle" android:tag="9:2" app:tint="@color/puzzle9" />
+        <ImageButton style="@style/mainScreenPuzzle" android:tag="1:2" app:tint="@color/puzzle1" />
+        <ImageButton style="@style/mainScreenPuzzle" android:tag="1:3" app:tint="@color/puzzle1" />
+        <ImageButton style="@style/mainScreenPuzzle" android:tag="7:1" app:tint="@color/puzzle7" />
+        <ImageButton style="@style/mainScreenPuzzle" android:tag="8:1" app:tint="@color/puzzle8" />
 
-        <ImageButton
-            style="@style/mainScreenPuzzle"
-            android:tag="11:0"
-            app:tint="@color/puzzle11" />
+        <!-- ROW 4 -->
+        <ImageButton style="@style/mainScreenPuzzle" android:tag="5:0" app:tint="@color/puzzle5" />
+        <ImageButton style="@style/mainScreenPuzzle" android:tag="6:0" app:tint="@color/puzzle6" />
+        <ImageButton style="@style/mainScreenPuzzle" android:tag="1:4" app:tint="@color/puzzle1" />
+        <ImageButton style="@style/mainScreenPuzzle" android:tag="1:5" app:tint="@color/puzzle1" />
+        <ImageButton style="@style/mainScreenPuzzle" android:tag="20:0" app:tint="@color/puzzle20" />
+        <ImageButton style="@style/mainScreenPuzzle" android:tag="8:2" app:tint="@color/puzzle8" />
 
-        <ImageButton
-            style="@style/mainScreenPuzzle"
-            android:tag="11:1"
-            app:tint="@color/puzzle11" />
+        <!-- ROW 5 -->
+        <ImageButton style="@style/mainScreenPuzzle" android:tag="4:0" app:tint="@color/puzzle4" />
+        <ImageButton style="@style/mainScreenPuzzle" android:tag="2:0" app:tint="@color/puzzle2" />
+        <ImageButton style="@style/mainScreenPuzzle" android:tag="2:1" app:tint="@color/puzzle2" />
+        <ImageButton style="@style/mainScreenPuzzle" android:tag="3:0" app:tint="@color/puzzle3" />
+        <ImageButton style="@style/mainScreenPuzzle" android:tag="3:1" app:tint="@color/puzzle3" />
+        <Space android:layout_width="75dp" android:layout_height="75dp" />
 
-        <ImageButton
-            style="@style/mainScreenPuzzle"
-            android:tag="10:0"
-            app:tint="@color/puzzle10" />
-
-        <ImageView
-            android:layout_width="75dp"
-            android:layout_height="75dp" />
-
-        <ImageView
-            android:layout_width="75dp"
-            android:layout_height="75dp" />
-
-        <ImageButton
-            style="@style/mainScreenPuzzle"
-            android:tag="9:1"
-            app:tint="@color/puzzle9" />
-
-        <ImageButton
-            style="@style/mainScreenPuzzle"
-            android:tag="1:0"
-            app:tint="@color/puzzle1" />
-
-        <ImageButton
-            style="@style/mainScreenPuzzle"
-            android:tag="1:1"
-            app:tint="@color/puzzle1" />
-
-        <ImageButton
-            style="@style/mainScreenPuzzle"
-            android:tag="7:0"
-            app:tint="@color/puzzle7" />
-
-        <ImageButton
-            style="@style/mainScreenPuzzle"
-            android:tag="8:0"
-            app:tint="@color/puzzle8" />
-
-        <ImageView
-            android:layout_width="75dp"
-            android:layout_height="75dp" />
-
-        <ImageButton
-            style="@style/mainScreenPuzzle"
-            android:tag="29:0"
-            app:tint="@color/puzzle29" />
-
-        <ImageButton
-            style="@style/mainScreenPuzzle"
-            android:tag="9:2"
-            app:tint="@color/puzzle9" />
-
-        <ImageButton
-            style="@style/mainScreenPuzzle"
-            android:tag="1:2"
-            app:tint="@color/puzzle1" />
-
-        <ImageButton
-            style="@style/mainScreenPuzzle"
-            android:tag="1:3"
-            app:tint="@color/puzzle1" />
-
-        <ImageButton
-            style="@style/mainScreenPuzzle"
-            android:tag="7:1"
-            app:tint="@color/puzzle7" />
-
-        <ImageButton
-            style="@style/mainScreenPuzzle"
-            android:tag="8:1"
-            app:tint="@color/puzzle8" />
-        <ImageView
-            android:layout_width="75dp"
-            android:layout_height="75dp" />
-
-        <ImageButton
-            style="@style/mainScreenPuzzle"
-            android:tag="5:0"
-            app:tint="@color/puzzle5" />
-
-        <ImageButton
-            style="@style/mainScreenPuzzle"
-            android:tag="6:0"
-            app:tint="@color/puzzle6" />
-
-        <ImageButton
-            style="@style/mainScreenPuzzle"
-            android:tag="1:4"
-            app:tint="@color/puzzle1" />
-
-        <ImageButton
-            style="@style/mainScreenPuzzle"
-            android:tag="1:5"
-            app:tint="@color/puzzle1" />
-
-        <ImageButton
-            style="@style/mainScreenPuzzle"
-            android:tag="20:0"
-            app:tint="@color/puzzle20" />
-
-        <ImageButton
-            style="@style/mainScreenPuzzle"
-            android:tag="8:2"
-            app:tint="@color/puzzle8" />
-
-        <ImageView
-            android:layout_width="75dp"
-            android:layout_height="75dp" />
-
-        <ImageButton
-            style="@style/mainScreenPuzzle"
-            android:tag="4:0"
-            app:tint="@color/puzzle4" />
-
-        <ImageButton
-            style="@style/mainScreenPuzzle"
-            android:tag="2:0"
-            app:tint="@color/puzzle2" />
-
-        <ImageButton
-            style="@style/mainScreenPuzzle"
-            android:tag="2:1"
-            app:tint="@color/puzzle2" />
-
-        <ImageButton
-            style="@style/mainScreenPuzzle"
-            android:tag="3:0"
-            app:tint="@color/puzzle3" />
-
-        <ImageButton
-            style="@style/mainScreenPuzzle"
-            android:tag="3:1"
-            app:tint="@color/puzzle3" />
-        <ImageButton
-            style="@style/mainScreenPuzzle"
-            android:tag="15:0"
-            app:tint="#037dff" />
-
-        <ImageButton
-            style="@style/mainScreenPuzzle"
-            android:onClick="resetGame"
-            android:src="@drawable/ic_reset"
-            android:padding="15dp"
-            android:scaleType="fitCenter" />
-
-        <ImageView
-            android:layout_width="75dp"
-            android:layout_height="75dp" />
-
-        <ImageView
-            android:layout_width="75dp"
-            android:layout_height="75dp" />
-
-        <ImageButton
-            style="@style/mainScreenPuzzle"
-            android:tag="17:0"
-            app:tint="@color/puzzle17" />
-
-        <ImageButton
-            style="@style/mainScreenPuzzle"
-            android:tag="3:2"
-            app:tint="@color/puzzle3" />
-
-        <ImageButton
-            style="@style/mainScreenPuzzle"
-            android:tag="3:3"
-            app:tint="@color/puzzle3" />
-
-        <ImageButton
-            style="@style/mainScreenPuzzle"
-            android:tag="15:1"
-            app:tint="#037dff" />
-
-        <ImageView
-            android:layout_width="75dp"
-            android:layout_height="75dp" />
-
-        <ImageView
-            android:layout_width="75dp"
-            android:layout_height="75dp" />
-
-        <ImageView
-            android:layout_width="75dp"
-            android:layout_height="75dp" />
-
-        <ImageView
-            android:layout_width="75dp"
-            android:layout_height="75dp" />
-
-        <ImageView
-            android:layout_width="75dp"
-            android:layout_height="75dp" />
-
-        <ImageView
-            android:layout_width="75dp"
-            android:layout_height="75dp" />
-
-        <ImageButton
-            style="@style/mainScreenPuzzle"
-            android:tag="15:3"
-            app:tint="#037dff" />
-
-        <ImageView
-            android:layout_width="75dp"
-            android:layout_height="75dp" />
-
-        <ImageView
-            android:layout_width="75dp"
-            android:layout_height="75dp" />
-
-        <ImageView
-            android:layout_width="75dp"
-            android:layout_height="75dp" />
-
-        <ImageView
-            android:layout_width="75dp"
-            android:layout_height="75dp" />
-
-        <ImageView
-            android:layout_width="75dp"
-            android:layout_height="75dp" />
-        <ImageView
-            android:layout_width="75dp"
-            android:layout_height="75dp" />
-
-        <ImageButton
-            style="@style/mainScreenPuzzle"
-            android:tag="15:2"
-            app:tint="#037dff" />
-
-        <ImageView
-            android:layout_width="75dp"
-            android:layout_height="75dp" />
-
-        <ImageView
-            android:layout_width="75dp"
-            android:layout_height="75dp" />
-
-        <ImageView
-            android:layout_width="75dp"
-            android:layout_height="75dp" />
-
-        <ImageView
-            android:layout_width="75dp"
-            android:layout_height="75dp" />
-
-
-
-
+        <!-- ROW 6 -->
+        <Space android:layout_width="75dp" android:layout_height="75dp" />
+        <Space android:layout_width="75dp" android:layout_height="75dp" />
+        <ImageButton style="@style/mainScreenPuzzle" android:tag="17:0" app:tint="@color/puzzle17" />
+        <ImageButton style="@style/mainScreenPuzzle" android:tag="3:2" app:tint="@color/puzzle3" />
+        <ImageButton style="@style/mainScreenPuzzle" android:tag="3:3" app:tint="@color/puzzle3" />
+        <Space android:layout_width="75dp" android:layout_height="75dp" />
 
     </GridLayout>
-
 </com.example.blackbox.PanningView>

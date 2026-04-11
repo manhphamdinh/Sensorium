@@ -2,7 +2,6 @@ package com.example.blackbox;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
@@ -13,8 +12,7 @@ import androidx.annotation.Nullable;
 
 public class PanningView extends FrameLayout {
 
-    private GestureDetector gestureDetector;
-
+    private float lastX, lastY;
     private float offsetX = 0;
     private float offsetY = 0;
 
@@ -44,23 +42,6 @@ public class PanningView extends FrameLayout {
 
         touchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
 
-        gestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
-            @Override
-            public boolean onDown(MotionEvent e) {
-                return true;
-            }
-
-            @Override
-            public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-                isScrolling = true;
-
-                offsetX -= distanceX;
-                offsetY -= distanceY;
-
-                updateChildTranslation();
-                return true;
-            }
-        });
     }
 
     @Override
@@ -103,18 +84,13 @@ public class PanningView extends FrameLayout {
 
         if (parentWidth == 0 || parentHeight == 0) return;
 
-        // Horizontal bounds
+        // Clamp ONLY if larger than parent
         if (childWidth > parentWidth) {
             offsetX = Math.max(parentWidth - childWidth, Math.min(0, offsetX));
-        } else {
-            offsetX = (parentWidth - childWidth) / 2f;
         }
 
-        // Vertical bounds
         if (childHeight > parentHeight) {
             offsetY = Math.max(parentHeight - childHeight, Math.min(0, offsetY));
-        } else {
-            offsetY = (parentHeight - childHeight) / 2f;
         }
 
         child.setTranslationX(offsetX);
@@ -123,35 +99,50 @@ public class PanningView extends FrameLayout {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        gestureDetector.onTouchEvent(event);
+        switch (event.getActionMasked()) {
 
-        int action = event.getActionMasked();
-
-        switch (action) {
             case MotionEvent.ACTION_DOWN:
-                initialX = event.getX();
-                initialY = event.getY();
+                lastX = event.getX();
+                lastY = event.getY();
                 isScrolling = false;
-                break;
+                return true;
 
             case MotionEvent.ACTION_MOVE:
-                float dx = Math.abs(event.getX() - initialX);
-                float dy = Math.abs(event.getY() - initialY);
+                float dx = event.getX() - lastX;
+                float dy = event.getY() - lastY;
 
-                if (dx > touchSlop || dy > touchSlop) {
-                    isScrolling = true;
+                if (!isScrolling) {
+                    float totalDx = Math.abs(event.getX() - initialX);
+                    float totalDy = Math.abs(event.getY() - initialY);
+
+                    if (totalDx > touchSlop || totalDy > touchSlop) {
+                        isScrolling = true;
+                    }
                 }
-                break;
+
+                if (isScrolling) {
+                    getParent().requestDisallowInterceptTouchEvent(true);
+                    offsetX += dx;
+                    offsetY += dy;
+
+                    updateChildTranslation();
+                }
+
+                lastX = event.getX();
+                lastY = event.getY();
+                return true;
 
             case MotionEvent.ACTION_UP:
-            case MotionEvent.ACTION_CANCEL:
-                if (action == MotionEvent.ACTION_UP && !isScrolling) {
-                    performClick(); // keep click behavior
+                if (!isScrolling) {
+                    performClick();
                 }
-                isScrolling = false;
-                break;
+                return true;
+
+            case MotionEvent.ACTION_CANCEL:
+                return true;
         }
-        return true;
+
+        return super.onTouchEvent(event);
     }
 
     @Override
@@ -166,17 +157,44 @@ public class PanningView extends FrameLayout {
 
             child.layout(0, 0, child.getMeasuredWidth(), child.getMeasuredHeight());
 
-            // Initial centering
             if (!initialized && child.getMeasuredWidth() > 0) {
                 offsetX = (getWidth() - child.getMeasuredWidth()) / 2f;
                 offsetY = (getHeight() - child.getMeasuredHeight()) / 2f;
-
-                child.setTranslationX(offsetX);
-                child.setTranslationY(offsetY);
-
                 initialized = true;
             }
+
+            // ✅ ALWAYS apply translation
+            child.setTranslationX(offsetX);
+            child.setTranslationY(offsetY);
         }
+    }
+
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+        switch (ev.getActionMasked()) {
+
+            case MotionEvent.ACTION_DOWN:
+                initialX = ev.getX();
+                initialY = ev.getY();
+                isScrolling = false;
+                break;
+
+            case MotionEvent.ACTION_MOVE:
+                float dx = Math.abs(ev.getX() - initialX);
+                float dy = Math.abs(ev.getY() - initialY);
+
+                if (dx > touchSlop || dy > touchSlop) {
+                    isScrolling = true;
+
+                    // Sync drag starting point
+                    lastX = ev.getX();
+                    lastY = ev.getY();
+
+                    return true; // start intercepting
+                }
+                break;
+        }
+        return false;
     }
 
     @Override

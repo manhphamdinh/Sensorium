@@ -15,7 +15,26 @@ import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 
+import androidx.annotation.NonNull;
+
 public class Puzzle3Fragment extends PuzzleBaseFragment {
+
+    // BOXES ARRAY AND BOX IDS
+    private final ImageView[] boxes = new ImageView[4];
+    int[] boxIds = {
+            R.id.imageView0,
+            R.id.imageView1,
+            R.id.imageView2,
+            R.id.imageView3,
+    };
+
+    // BOX POSITIONS
+    // 0 1
+    // 3 2
+    private static final int TOP_LEFT = 0;      // SILENCE
+    private static final int TOP_RIGHT = 1;     // MAX VOLUME
+    private static final int BOTTOM_RIGHT = 2;  // NO VOLUME
+    private static final int BOTTOM_LEFT = 3;   // HEADPHONES
 
     private BroadcastReceiver audioReceiver;
     private AudioDeviceCallback audioDeviceCallback;
@@ -29,6 +48,11 @@ public class Puzzle3Fragment extends PuzzleBaseFragment {
             }
         }
     };
+    
+    @Override
+    protected int getTotalBoxes() {
+        return boxes.length;
+    }
 
     @Override
     public int getPuzzleId() {
@@ -37,7 +61,24 @@ public class Puzzle3Fragment extends PuzzleBaseFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.activity_puzzle3, container, false);
+        View root = inflater.inflate(R.layout.activity_puzzle3, container, false);
+
+        // Initialize boxes
+        for (int i = 0; i < boxes.length; i++) {
+            boxes[i] = root.findViewById(boxIds[i]);
+        }
+
+        return root;
+    }
+
+    // LOADS PREVIOUS PROGRESS
+    @Override
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        for (int index : getCompletedThisRun()) {
+            applyCurrentProgress(boxes[index]);
+        }
     }
 
     @Override
@@ -131,21 +172,23 @@ public class Puzzle3Fragment extends PuzzleBaseFragment {
                 audioManager.getRingerMode() == AudioManager.RINGER_MODE_SILENT
                 || audioManager.getRingerMode() == AudioManager.RINGER_MODE_VIBRATE;
 
+        if (isSilent) {
+            updatePuzzle(boxes[TOP_LEFT], TOP_LEFT);
+        }
+
         if (volume == max) {
-            animation(0);
+            updatePuzzle(boxes[TOP_RIGHT], TOP_RIGHT);
         }
 
         if (volume == 0) {
-            animation(1);
+            updatePuzzle(boxes[BOTTOM_RIGHT], BOTTOM_RIGHT);
         }
 
         if (isHeadphonesOn) {
-            animation(2);
+            updatePuzzle(boxes[BOTTOM_LEFT], BOTTOM_LEFT);
         }
 
-        if (isSilent) {
-            animation(3);
-        }
+
 
         // ---- Fluid UI ----
         updateFluid(volume, max);

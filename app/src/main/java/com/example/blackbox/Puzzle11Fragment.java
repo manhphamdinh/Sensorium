@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,14 +16,26 @@ import org.shredzone.commons.suncalc.MoonIllumination;
 
 public class Puzzle11Fragment extends PuzzleBaseFragment {
 
+    // BOXES ARRAY AND BOX IDS
+    private final ImageView[] boxes = new ImageView[2];
+    int[] boxIds = {
+            R.id.imageView0,
+            R.id.imageView1,
+    };
+
+    // BOX POSITIONS
+    private static final int LEFT = 0;    // New moon box
+    private static final int RIGHT = 1;   // Full moon Box
+
+    // PHASE PARAMETERS
+    private static final double FULL_MOON = 0.5;
     private static final double PHASE_TOLERANCE = 0.05;
+    private static final int PHASE_CHECK_DELAY = 5000;  //ms
 
-    private static final int PHASE_CHECK_DELAY = 5000; // ms
-
-
-    // Debug mode
+    // ================== DEBUG MODE =============
     private static final boolean DEBUG_MODE = false;
     private static final double DEBUG_PHASE = 0.0;
+    // ===========================================
 
     private View shadow;
 
@@ -36,6 +49,12 @@ public class Puzzle11Fragment extends PuzzleBaseFragment {
         }
     };
 
+    // SETUP
+    @Override
+    protected int getTotalBoxes() {
+        return boxes.length;
+    }
+
     @Override
     public int getPuzzleId() {
         return 11;
@@ -43,12 +62,24 @@ public class Puzzle11Fragment extends PuzzleBaseFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.activity_puzzle11, container, false);
+        View root = inflater.inflate(R.layout.activity_puzzle11, container, false);
+
+        // Initialize boxes
+        for (int i = 0; i < boxes.length; i++) {
+            boxes[i] = root.findViewById(boxIds[i]);
+        }
+
+        return root;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        for (int index : getCompletedThisRun()) {
+            applyCurrentProgress(boxes[index]);
+        }
+
         shadow = view.findViewById(R.id.moonShadow);
     }
 
@@ -111,14 +142,14 @@ public class Puzzle11Fragment extends PuzzleBaseFragment {
 
     private void checkPuzzleCompletion(double phase) {
 
-        // 🌑 New Moon (phase ≈ 0 or 1)
+        // 🌑 New Moon (phase ≈ 0 or 100%)
         if (phase <= PHASE_TOLERANCE || phase >= (1 - PHASE_TOLERANCE)) {
-            animation(0);
+            updatePuzzle(boxes[LEFT], LEFT);
         }
 
-        // 🌕 Full Moon (phase ≈ 0.5)
-        else if (Math.abs(phase - 0.5) < PHASE_TOLERANCE) {
-            animation(1);
+        // 🌕 Full Moon (phase ≈ 50%)
+        else if (phase >= FULL_MOON - PHASE_TOLERANCE && phase <= FULL_MOON + PHASE_TOLERANCE) {
+            updatePuzzle(boxes[RIGHT], RIGHT);
         }
     }
 }

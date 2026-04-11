@@ -10,16 +10,14 @@
     <ImageView
         android:id="@+id/imageView0"
         style="@style/boxInChallenge"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentTop="true"
         android:layout_margin="100dp"
         android:backgroundTint="@color/puzzle3" />
 
     <ImageView
         android:id="@+id/imageView1"
         style="@style/boxInChallenge"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
         android:layout_margin="100dp"
         android:backgroundTint="@color/puzzle3" />
 
@@ -27,15 +25,19 @@
         android:id="@+id/imageView2"
         style="@style/boxInChallenge"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
         android:layout_margin="100dp"
         android:backgroundTint="@color/puzzle3" />
 
     <ImageView
         android:id="@+id/imageView3"
         style="@style/boxInChallenge"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
         android:layout_margin="100dp"
         android:backgroundTint="@color/puzzle3" />
+
+
 
     <ImageView
         android:id="@+id/fluid"

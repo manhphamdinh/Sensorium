@@ -3,4 +3,5 @@
     <string name="pref">com.example.blackbox</string>
     <string name="prefSolved">solved_boxes</string>
     <string name="prefClock">hours</string>
+    <string name="panning_view_description">main_view</string>
 </resources>
