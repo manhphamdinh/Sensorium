@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 
 import com.squareup.seismic.ShakeDetector;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 public class Puzzle17Fragment extends PuzzleBaseFragment implements ShakeDetector.Listener {
 
@@ -22,6 +24,7 @@ public class Puzzle17Fragment extends PuzzleBaseFragment implements ShakeDetecto
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        setupCoinButton(requireActivity().getWindow().getDecorView().getRootView());
         view.findViewById(R.id.imageView0).startAnimation(
                 AnimationUtils.loadAnimation(requireContext(), R.anim.wiggle)
         );

@@ -13,6 +13,8 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import androidx.core.content.ContextCompat;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 public class Puzzle8Fragment extends PuzzleBaseFragment {
 
@@ -28,6 +30,12 @@ public class Puzzle8Fragment extends PuzzleBaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.activity_puzzle8, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        setupCoinButton(requireActivity().getWindow().getDecorView().getRootView());
     }
 
     @Override

@@ -1,6 +1,8 @@
 <resources>
-    <string name="app_name">Blackbox</string>
-    <string name="pref">com.example.blackbox</string>
-    <string name="prefSolved">solved_boxes</string>
-    <string name="prefClock">hours</string>
+<string name="app_name">Blackbox</string>
+<string name="pref">com.example.blackbox</string>
+<string name="prefSolved">solved_boxes</string>
+<string name="prefClock">hours</string>
+<string name="prefCoins">coins</string>
+<string name="prefHintsUsed">hints_used</string>
 </resources>

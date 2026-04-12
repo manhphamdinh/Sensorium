@@ -17,6 +17,8 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 
 import java.util.ArrayList;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 public class Puzzle10Fragment extends PuzzleBaseFragment {
 
@@ -37,6 +39,7 @@ public class Puzzle10Fragment extends PuzzleBaseFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         wavyLineView = view.findViewById(R.id.wavyLineView);
+        setupCoinButton(requireActivity().getWindow().getDecorView().getRootView());
     }
 
     @Override

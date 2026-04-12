@@ -13,6 +13,8 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.ImageView;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 public class Puzzle4Fragment extends PuzzleBaseFragment implements SensorEventListener {
 
@@ -26,6 +28,12 @@ public class Puzzle4Fragment extends PuzzleBaseFragment implements SensorEventLi
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.activity_puzzle4, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        setupCoinButton(requireActivity().getWindow().getDecorView().getRootView());
     }
 
     @Override

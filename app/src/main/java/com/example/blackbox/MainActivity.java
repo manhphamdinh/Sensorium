@@ -1,6 +1,7 @@
 package com.example.blackbox;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -13,6 +14,8 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -48,6 +51,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Khởi tạo xu
+        updateCoinDisplay();
+
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
             || ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED)
         {
@@ -56,9 +63,31 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void updateCoinDisplay() {
+        TextView mainCoinCount = findViewById(R.id.mainCoinCount);
+        if (mainCoinCount != null) {
+            mainCoinCount.setText(String.valueOf(HintManager.getCoins(this)));
+        }
+    }
+
+    public void showCoinOptions(View view) {
+        new AlertDialog.Builder(this)
+                .setTitle("Nhận thêm xu")
+                .setMessage("Bạn có muốn xem video để nhận thêm 1 xu không?")
+                .setPositiveButton("Xem video", (dialog, which) -> {
+                    // Giả lập xem video thành công
+                    HintManager.addCoin(this, 1);
+                    updateCoinDisplay();
+                    Toast.makeText(this, "+1 xu!", Toast.LENGTH_SHORT).show();
+                })
+                .setNegativeButton("Đóng", null)
+                .show();
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
+        updateCoinDisplay();
         SharedPreferences pref = getSharedPreferences(getString(R.string.pref), MODE_PRIVATE);
         String solved = pref.getString(getString(R.string.prefSolved), "[]");
 
@@ -89,8 +118,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void puzzleLaunch(View view) {
         String tag = (String) view.getTag();
-
-        // tag có dạng "1:0", lấy phần trước dấu ":"
         int puzzleId = Integer.parseInt(tag.split(":")[0]);
 
         Intent intent = new Intent(this, PuzzleActivity.class);

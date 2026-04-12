@@ -26,6 +26,7 @@ public class Puzzle29Fragment extends PuzzleBaseFragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        setupCoinButton(requireActivity().getWindow().getDecorView().getRootView());
         view.setOnTouchListener((v, event) -> {
             switch (event.getAction() & MotionEvent.ACTION_MASK) {
                 case MotionEvent.ACTION_DOWN: {

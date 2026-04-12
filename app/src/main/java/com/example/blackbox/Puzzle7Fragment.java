@@ -248,6 +248,8 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashSet;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 public class Puzzle7Fragment extends PuzzleBaseFragment {
 
@@ -302,10 +304,12 @@ public class Puzzle7Fragment extends PuzzleBaseFragment {
         return inflater.inflate(R.layout.activity_puzzle7, container, false);
     }
 
+
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        setupCoinButton(requireActivity().getWindow().getDecorView().getRootView());
         Calendar cal = Calendar.getInstance();
         int currentHour = cal.get(Calendar.HOUR_OF_DAY);
         boolean isMorning = currentHour < 12;

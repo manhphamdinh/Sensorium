@@ -12,6 +12,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.shredzone.commons.suncalc.MoonIllumination;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 public class Puzzle11Fragment extends PuzzleBaseFragment {
 
@@ -49,6 +51,7 @@ public class Puzzle11Fragment extends PuzzleBaseFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        setupCoinButton(requireActivity().getWindow().getDecorView().getRootView());
         shadow = view.findViewById(R.id.moonShadow);
     }
 

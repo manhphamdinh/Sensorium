@@ -11,6 +11,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import static java.lang.Math.acos;
 
@@ -19,12 +21,20 @@ public class Puzzle1Fragment extends PuzzleBaseFragment implements SensorEventLi
     private static final double THRESHOLD = 9.7;
     private SensorManager mSensorManager;
 
+
+
     @Override
     public int getPuzzleId() { return 1; }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.activity_puzzle1, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        setupCoinButton(requireActivity().getWindow().getDecorView().getRootView());
     }
 
     @Override

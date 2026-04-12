@@ -9,6 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.view.ViewGroup.LayoutParams;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 public class Puzzle2Fragment extends PuzzleBaseFragment {
 
@@ -26,6 +28,12 @@ public class Puzzle2Fragment extends PuzzleBaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.activity_puzzle2, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        setupCoinButton(requireActivity().getWindow().getDecorView().getRootView());
     }
 
     @Override
