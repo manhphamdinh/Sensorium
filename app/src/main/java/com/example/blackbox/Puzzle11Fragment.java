@@ -34,7 +34,7 @@ public class Puzzle11Fragment extends PuzzleBaseFragment {
 
     // ================== DEBUG MODE =============
     private static final boolean DEBUG_MODE = false;
-    private static final double DEBUG_PHASE_NORMALIZED = 0.0f; // 0 -> 1
+    private static final double DEBUG_PHASE_NORMALIZED = 0f; // 0 -> 1
     // ===========================================
 
     private View shadow;
@@ -119,7 +119,7 @@ public class Puzzle11Fragment extends PuzzleBaseFragment {
 
             float shift;
 
-            if (phaseNormalized <= 0.5) {
+            if (phaseNormalized <= FULL_MOON) {
                 // NEW → FULL (center → left)
                 float t = (float)(phaseNormalized / 0.5); // 0 → 1
                 shift = -t; // 0 → -1
@@ -129,7 +129,7 @@ public class Puzzle11Fragment extends PuzzleBaseFragment {
                 shift = 1 - t; // 1 → 0
             }
 
-            shadow.setTranslationX(shift * width / 2f);
+            shadow.setTranslationX(shift * width);
             shadow.setAlpha(0.9f);
         });
     }
