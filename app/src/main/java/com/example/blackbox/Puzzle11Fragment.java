@@ -28,13 +28,13 @@ public class Puzzle11Fragment extends PuzzleBaseFragment {
     private static final int RIGHT = 1;   // Full moon Box
 
     // PHASE PARAMETERS
-    private static final double FULL_MOON = 0.5;
-    private static final double PHASE_TOLERANCE = 0.05;
+    private static final float FULL_MOON = 0.5f;
+    private static final float PHASE_TOLERANCE = 0.05f;
     private static final int PHASE_CHECK_DELAY = 5000;  //ms
 
     // ================== DEBUG MODE =============
     private static final boolean DEBUG_MODE = false;
-    private static final double DEBUG_PHASE_NORMALIZED = 0f; // 0 -> 1
+    private static final float DEBUG_PHASE_NORMALIZED = 0f; // 0 -> 1
     // ===========================================
 
     private View shadow;
@@ -98,7 +98,7 @@ public class Puzzle11Fragment extends PuzzleBaseFragment {
     private void updateMoon() {
         MoonIllumination moon = MoonIllumination.compute().now().execute();
 
-        double phaseNormalized = moon.getPhase() / 360.0;
+        float phaseNormalized = (float) moon.getPhase() / 360.0f;
 
         if (DEBUG_MODE)
         {
@@ -111,30 +111,39 @@ public class Puzzle11Fragment extends PuzzleBaseFragment {
         checkPuzzleCompletion(phaseNormalized);
     }
 
-    private void updateShadowPosition(double phaseNormalized) {
+    private void updateShadowPosition(float phaseNormalized) {
         if (shadow == null) return;
 
         shadow.post(() -> {
-            float width = shadow.getWidth();
+            //     N       F       N
+            //     0      0.5      1
+            // ----|-------|-------|--->  phase
 
-            float shift;
+            //     F       N       F
+            //    -1       0       1
+            // ----|-------|-------|--->  Offset
 
-            if (phaseNormalized <= FULL_MOON) {
-                // NEW → FULL (center → left)
-                float t = (float)(phaseNormalized / 0.5); // 0 → 1
-                shift = -t; // 0 → -1
-            } else {
-                // FULL → NEW (right → center)
-                float t = (float)((phaseNormalized - 0.5) / 0.5); // 0 → 1
-                shift = 1 - t; // 1 → 0
+            // NEW MOON → FULL MOON:
+            // phase: 0 -> 0.5;
+            // offset_1: 0 -> -1
+            // => offset_1 = -2 * Phase
+
+            // FULL MOON → NEW MOON:
+            // phase: 0.5 -> 1;
+            // offset_2: 1 -> 0
+            // => offset_2 = 2 - 2x = 2 + offset_1
+
+            float horizontalOffset = - 2 * phaseNormalized;
+            if (phaseNormalized > FULL_MOON) {
+                horizontalOffset += 2;
             }
 
-            shadow.setTranslationX(shift * width);
+            shadow.setTranslationX(horizontalOffset * shadow.getWidth());
             shadow.setAlpha(0.9f);
         });
     }
 
-    private void checkPuzzleCompletion(double phaseNormalized) {
+    private void checkPuzzleCompletion(float phaseNormalized) {
 
         // 🌑 New Moon (phase ≈ 0 or 100%)
         if (phaseNormalized <= PHASE_TOLERANCE || phaseNormalized >= (1 - PHASE_TOLERANCE)) {

@@ -1,50 +1,40 @@
-<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/ll"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/moonContainer"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:clipChildren="false"
-    android:clipToPadding="false"
-    android:orientation="vertical"
-    tools:context=".Puzzle11Fragment">
+    android:layout_height="match_parent">
 
-    <FrameLayout
+    <!-- Moon -->
+    <View
+        android:id="@+id/moonBase"
         android:layout_width="300dp"
         android:layout_height="300dp"
-        android:layout_centerInParent="true">
+        android:layout_gravity="center"
+        android:background="@drawable/circle"
+        android:backgroundTint="#f9ea9d"/>
 
-        <!-- Moon -->
-        <View
-            android:id="@+id/moonBase"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/circle"
-            android:backgroundTint="#f9ea9d" />
+    <!-- Shadow -->
+    <View
+        android:id="@+id/moonShadow"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:layout_gravity="center"
+        android:background="@drawable/circle"
+        android:backgroundTint="#000000" />
 
-        <!-- Shadow -->
-        <View
-            android:id="@+id/moonShadow"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/circle"
-            android:backgroundTint="#000000" />
-    </FrameLayout>
-
+    <!-- LEFT BOX -->
     <ImageView
         android:id="@+id/imageView0"
         style="@style/boxInChallenge"
-        android:layout_alignParentStart="true"
-        android:layout_centerVertical="true"
-        android:layout_marginStart="60dp"
-        android:backgroundTint="@color/puzzle11" />
+        android:layout_gravity="center"
+        android:translationX="-90dp"
+        android:backgroundTint="@color/puzzle11"/>
 
+    <!-- RIGHT BOX -->
     <ImageView
         android:id="@+id/imageView1"
         style="@style/boxInChallenge"
-        android:layout_alignParentEnd="true"
-        android:layout_centerVertical="true"
-        android:layout_marginEnd="60dp"
-        android:backgroundTint="@color/puzzle11" />
+        android:layout_gravity="center"
+        android:translationX="90dp"
+        android:backgroundTint="@color/puzzle11"/>
 
-</RelativeLayout>
+</FrameLayout>
