@@ -107,14 +107,11 @@ public class Puzzle2Fragment extends PuzzleBaseFragment {
         }
     }
 
-    // MAIN UPDATE: handles both puzzle logic + UI visuals
     private void updateBrightnessUI() {
-        if (root == null) return;
-
         int brightness = getScreenBrightness();
-        if (brightness < 0) return; // Failed to read brightness
+        if (brightness < 0) { return; }
 
-        handleTriggers(brightness); // Check puzzle conditions
+        checkConditions(brightness); // Check puzzle conditions
         updateRays(brightness);     // Update visual feedback
     }
 
@@ -131,7 +128,7 @@ public class Puzzle2Fragment extends PuzzleBaseFragment {
     }
 
     // TRIGGER PUZZLE COMPLETION BASED ON THRESHOLDS
-    private void handleTriggers(int brightness) {
+    private void checkConditions(int brightness) {
         if (brightness <= LOW_THRESHOLD) {
             updatePuzzle(boxes[LEFT], LEFT);
         }
@@ -142,15 +139,14 @@ public class Puzzle2Fragment extends PuzzleBaseFragment {
 
     // VISUAL FEEDBACK: scale ray height proportionally to brightness
     private void updateRays(int brightness) {
-        float ratio = brightness / (float) MAX_BRIGHTNESS;
-        int targetHeight = (int) (100 * ratio); // Max height = 100px
+        int currentHeight = brightness / MAX_BRIGHTNESS;
 
         for (ImageView ray : rays) {
             ViewGroup.LayoutParams params = ray.getLayoutParams();
 
             // Avoid redundant layout passes (performance optimization)
-            if (params.height != targetHeight) {
-                params.height = targetHeight;
+            if (params.height != currentHeight) {
+                params.height = currentHeight;
                 ray.setLayoutParams(params);
             }
         }
