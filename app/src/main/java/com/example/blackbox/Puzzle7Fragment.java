@@ -77,7 +77,7 @@ public class Puzzle7Fragment extends PuzzleBaseFragment {
 
         // ====================== DEBUG FULL DAY/NIGHT ======================
         if (DEBUG_MODE == 1) {
-            SharedPreferences pref = requireContext().getSharedPreferences(getString(R.string.pref), Context.MODE_PRIVATE);
+            SharedPreferences pref = requireContext().getSharedPreferences(getString(R.string.prefProgress), Context.MODE_PRIVATE);
 
             if (DEBUG_FULL_DAY == 1) {
                 JSONArray arr = new JSONArray();
@@ -133,7 +133,7 @@ public class Puzzle7Fragment extends PuzzleBaseFragment {
         Context context = getContext();
         if (context == null) return;
 
-        SharedPreferences pref = context.getSharedPreferences(getString(R.string.pref), Context.MODE_PRIVATE);
+        SharedPreferences pref = context.getSharedPreferences(getString(R.string.prefProgress), Context.MODE_PRIVATE);
         long lastReset = pref.getLong("last_clock_reset_7", 0);
         int currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
 
@@ -151,7 +151,7 @@ public class Puzzle7Fragment extends PuzzleBaseFragment {
         if (context == null) return;
 
         String prefKey = (boxIndex == 0) ? PREF_CLOCK_AM : PREF_CLOCK_PM;
-        SharedPreferences pref = context.getSharedPreferences(getString(R.string.pref), Context.MODE_PRIVATE);
+        SharedPreferences pref = context.getSharedPreferences(getString(R.string.prefProgress), Context.MODE_PRIVATE);
         String existing = pref.getString(prefKey, "[]");
 
         try {
@@ -170,7 +170,7 @@ public class Puzzle7Fragment extends PuzzleBaseFragment {
     }
 
     private void loadAndDrawArcs(ViewGroup root, String prefKey) {
-        SharedPreferences pref = requireContext().getSharedPreferences(getString(R.string.pref), Context.MODE_PRIVATE);
+        SharedPreferences pref = requireContext().getSharedPreferences(getString(R.string.prefProgress), Context.MODE_PRIVATE);
         String data = pref.getString(prefKey, "[]");
 
         try {
@@ -182,7 +182,7 @@ public class Puzzle7Fragment extends PuzzleBaseFragment {
     }
 
     private boolean isPeriodCompleted(String prefKey) {
-        SharedPreferences pref = requireContext().getSharedPreferences(getString(R.string.pref), Context.MODE_PRIVATE);
+        SharedPreferences pref = requireContext().getSharedPreferences(getString(R.string.prefProgress), Context.MODE_PRIVATE);
         String data = pref.getString(prefKey, "[]");
         try {
             return new JSONArray(data).length() >= 12;
