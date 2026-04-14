@@ -18,23 +18,27 @@
         style="@style/corner"
         android:layout_alignParentEnd="true"
         android:layout_alignParentTop="true"
-        android:rotation="45" />
+        android:rotation="45"
+        android:alpha="0.3"/>
 
     <ImageView
         style="@style/corner"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:rotation="-45" />
+        android:rotation="-45"
+        android:alpha="0.3"/>
 
     <ImageView
         style="@style/corner"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:rotation="-225" />
+        android:rotation="-225"
+        android:alpha="0.3"/>
 
     <ImageView
         style="@style/corner"
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
-        android:rotation="225" />
+        android:rotation="225"
+        android:alpha="0.3"/>
 </RelativeLayout>
