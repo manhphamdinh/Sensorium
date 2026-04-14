@@ -201,7 +201,7 @@ public abstract class PuzzleBaseFragment extends Fragment {
             }
         });
 
-        builder.setNegativeButton("No", null);
+        builder.setNegativeButton("Cancel", null);
         builder.show();
     }
 
