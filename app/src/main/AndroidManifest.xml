@@ -29,6 +29,9 @@
 
         <activity android:name=".PuzzleActivity" />
         <activity android:name=".HintActivity" />
+        <activity android:name=".AdActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.NoActionBar"/>
 
     </application>
 

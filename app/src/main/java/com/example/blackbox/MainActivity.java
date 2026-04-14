@@ -17,6 +17,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
@@ -27,6 +29,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 public class MainActivity extends AppCompatActivity {
+
+    private ActivityResultLauncher<Intent> adLauncher;
 
     // GET VIEWS BY TAG
     static ArrayList<ImageView> getViewsByTag(ViewGroup root, String tag) {
@@ -57,6 +61,17 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        adLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == AdActivity.RESULT_AD_FINISHED) {
+                        HintManager.addCoin(this, 1);
+                        updateCoinDisplay();
+                        Toast.makeText(this, "+1 xu!", Toast.LENGTH_SHORT).show();
+                    }
+                }
+        );
+
         // Khởi tạo xu
         updateCoinDisplay();
 
@@ -83,10 +98,8 @@ public class MainActivity extends AppCompatActivity {
                 .setTitle("Nhận thêm xu")
                 .setMessage("Bạn có muốn xem video để nhận thêm 1 xu không?")
                 .setPositiveButton("Xem video", (dialog, which) -> {
-                    // Giả lập xem video thành công
-                    HintManager.addCoin(this, 1);
-                    updateCoinDisplay();
-                    Toast.makeText(this, "+1 xu!", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(this, AdActivity.class);
+                    adLauncher.launch(intent);
                 })
                 .setNegativeButton("Đóng", null)
                 .show();

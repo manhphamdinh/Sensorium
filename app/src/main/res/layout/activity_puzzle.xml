@@ -2,11 +2,17 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/fragment_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <!-- Container riêng cho Fragment để không bị thay thế mất nút Hint -->
+    <FrameLayout
+        android:id="@+id/fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
     <!-- Nút Hint thu nhỏ (Góc trên phải trong màn hình chơi) -->
+    <!-- Đặt sau FrameLayout để luôn nằm trên cùng (z-order) -->
     <LinearLayout
         android:id="@+id/coinButton"
         android:layout_width="wrap_content"
@@ -18,6 +24,8 @@
         android:layout_marginTop="12dp"
         android:layout_marginEnd="12dp"
         android:gravity="center_vertical"
+        android:background="@drawable/rounded_bg_translucent"
+        android:elevation="10dp"
         android:clickable="true"
         android:focusable="true">
 
