@@ -3,6 +3,7 @@ package com.example.blackbox;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.view.View;
@@ -10,6 +11,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
@@ -25,6 +28,23 @@ public abstract class PuzzleBaseFragment extends Fragment {
     private boolean puzzleCompletedThisRun = false;
     private PuzzleProgress progress;
     private PuzzleCompletion completion;
+
+    private ActivityResultLauncher<Intent> adLauncher;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        adLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == AdActivity.RESULT_AD_FINISHED) {
+                        HintManager.addCoin(requireContext(), 1);
+                        updateCoinUI();
+                        Toast.makeText(requireContext(), "Đã nhận +1 xu!", Toast.LENGTH_SHORT).show();
+                    }
+                }
+        );
+    }
 
     // CORE
     protected void updatePuzzle(ImageView puzzleBox){
@@ -93,6 +113,9 @@ public abstract class PuzzleBaseFragment extends Fragment {
 
         completedThisRun.clear();
         completedThisRun.addAll(progress.getPuzzleCurrentProgress());
+        
+        // Tự động setup coin button nếu layout có hỗ trợ
+        setupCoinButton(requireActivity().getWindow().getDecorView().getRootView());
     }
 
     @Override
@@ -122,6 +145,15 @@ public abstract class PuzzleBaseFragment extends Fragment {
         }
     }
 
+    protected void updateCoinUI() {
+        if (getActivity() != null) {
+            TextView coinCount = getActivity().findViewById(R.id.coinCount);
+            if (coinCount != null) {
+                coinCount.setText(String.valueOf(HintManager.getCoins(getContext())));
+            }
+        }
+    }
+
     protected void showHintDialog() {
         Context context = getContext();
         if (context == null) return;
@@ -130,14 +162,14 @@ public abstract class PuzzleBaseFragment extends Fragment {
         int puzzleId = getPuzzleId();
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle("Hints  🪙 " + coins + " xu");
+        builder.setTitle("Gợi ý (🪙 " + coins + " xu)");
 
         String[] hintLabels = new String[3];
         for (int i = 0; i < 3; i++) {
             if (HintManager.isHintUnlocked(context, puzzleId, i)) {
-                hintLabels[i] = "Hint " + (i + 1) + " (đã mở) → " + HintManager.getHintText(puzzleId, i);
+                hintLabels[i] = "Gợi ý " + (i + 1) + " (Đã mở)";
             } else {
-                hintLabels[i] = "Hint " + (i + 1) + " — tốn 2 xu";
+                hintLabels[i] = "Gợi ý " + (i + 1) + " (Tốn 2 xu)";
             }
         }
 
@@ -145,15 +177,19 @@ public abstract class PuzzleBaseFragment extends Fragment {
             if (HintManager.isHintUnlocked(context, puzzleId, which)) {
                 showHintContent(puzzleId, which);
             } else {
-                boolean success = HintManager.unlockHint(context, puzzleId, which);
-                if (success) {
-                    showHintContent(puzzleId, which);
-                    if (getView() != null) {
-                        TextView coinCount = getView().findViewById(R.id.coinCount);
-                        if (coinCount != null) {
-                            coinCount.setText(String.valueOf(HintManager.getCoins(context)));
-                        }
-                    }
+                if (HintManager.getCoins(context) >= HintManager.COINS_PER_HINT) {
+                    new AlertDialog.Builder(context)
+                        .setTitle("Mở khóa gợi ý")
+                        .setMessage("Bạn có muốn dùng 2 xu để mở gợi ý này không?")
+                        .setPositiveButton("Mở", (d, w) -> {
+                            boolean success = HintManager.unlockHint(context, puzzleId, which);
+                            if (success) {
+                                updateCoinUI();
+                                showHintContent(puzzleId, which);
+                            }
+                        })
+                        .setNegativeButton("Hủy", null)
+                        .show();
                 } else {
                     new AlertDialog.Builder(context)
                             .setTitle("Không đủ xu!")
@@ -174,23 +210,15 @@ public abstract class PuzzleBaseFragment extends Fragment {
         if (context == null) return;
         String text = HintManager.getHintText(puzzleId, hintIndex);
         new AlertDialog.Builder(context)
-                .setTitle("Hint " + (hintIndex + 1))
+                .setTitle("Gợi ý " + (hintIndex + 1))
                 .setMessage(text)
                 .setPositiveButton("OK", null)
                 .show();
     }
 
     protected void watchAdForCoin() {
-        Context context = getContext();
-        if (context == null) return;
-        HintManager.addCoin(context, 1);
-        Toast.makeText(context, "+1 xu!", Toast.LENGTH_SHORT).show();
-        if (getView() != null) {
-            TextView coinCount = getView().findViewById(R.id.coinCount);
-            if (coinCount != null) {
-                coinCount.setText(String.valueOf(HintManager.getCoins(context)));
-            }
-        }
+        Intent intent = new Intent(requireContext(), AdActivity.class);
+        adLauncher.launch(intent);
     }
 
     // UTILITIES
