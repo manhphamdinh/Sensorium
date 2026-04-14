@@ -12,6 +12,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 public class Puzzle5Fragment extends PuzzleBaseFragment implements SensorEventListener {
 
@@ -33,6 +35,12 @@ public class Puzzle5Fragment extends PuzzleBaseFragment implements SensorEventLi
         airplaneBox = root.findViewById(R.id.imageView0);
 
         return root;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        setupCoinButton(requireActivity().getWindow().getDecorView().getRootView());
     }
 
     @Override

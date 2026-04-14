@@ -14,6 +14,7 @@ import android.widget.RelativeLayout;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+import androidx.annotation.Nullable;
 
 public class Puzzle9Fragment extends PuzzleBaseFragment {
 
@@ -67,12 +68,13 @@ public class Puzzle9Fragment extends PuzzleBaseFragment {
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         for (int index : getCompletedThisRun()) {
             applyCurrentProgress(boxes[index]);
         }
+        setupCoinButton(requireActivity().getWindow().getDecorView().getRootView());
     }
 
     @Override

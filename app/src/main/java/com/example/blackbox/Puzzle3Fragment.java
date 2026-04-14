@@ -14,8 +14,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
-
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 public class Puzzle3Fragment extends PuzzleBaseFragment {
 
@@ -36,9 +36,11 @@ public class Puzzle3Fragment extends PuzzleBaseFragment {
     private static final int BOTTOM_RIGHT = 2;  // NO VOLUME
     private static final int BOTTOM_LEFT = 3;   // HEADPHONES
 
+    // CACHE
     private BroadcastReceiver audioReceiver;
     private AudioDeviceCallback audioDeviceCallback;
     private ValueAnimator fluidAnimator;
+    private ImageView fluid;
     private final Runnable stateChecker = new Runnable() {
         @Override
         public void run() {
@@ -63,22 +65,23 @@ public class Puzzle3Fragment extends PuzzleBaseFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.activity_puzzle3, container, false);
 
-        // Initialize boxes
+        // CACHE
         for (int i = 0; i < boxes.length; i++) {
             boxes[i] = root.findViewById(boxIds[i]);
         }
 
+        fluid = root.findViewById(R.id.fluid);
         return root;
     }
 
-    // LOADS PREVIOUS PROGRESS
     @Override
-    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         for (int index : getCompletedThisRun()) {
             applyCurrentProgress(boxes[index]);
         }
+        setupCoinButton(requireActivity().getWindow().getDecorView().getRootView());
     }
 
     @Override
@@ -188,8 +191,6 @@ public class Puzzle3Fragment extends PuzzleBaseFragment {
             updatePuzzle(boxes[BOTTOM_LEFT], BOTTOM_LEFT);
         }
 
-
-
         // ---- Fluid UI ----
         updateFluid(volume, max);
     }
@@ -199,19 +200,17 @@ public class Puzzle3Fragment extends PuzzleBaseFragment {
         View root = getView();
         if (root == null) return;
 
-        ImageView fluid = root.findViewById(R.id.fluid);
-
         int deviceHeight = MainActivity
                 .getDeviceHeightAndWidth(requireContext()).first;
 
         float ratio = max > 0 ? (float) volume / max : 0;
-        int targetHeight = (int) (deviceHeight * ratio);
+        int currentHeight = (int) (deviceHeight * ratio);
 
         ViewGroup.LayoutParams params = fluid.getLayoutParams();
-        if (lastHeight == targetHeight) {
+        if (lastHeight == currentHeight) {
             return;
         }
-        lastHeight = targetHeight;
+        lastHeight = currentHeight;
 
         int startHeight = params.height;
 
@@ -219,7 +218,7 @@ public class Puzzle3Fragment extends PuzzleBaseFragment {
             fluidAnimator.cancel();
         }
 
-        fluidAnimator = ValueAnimator.ofInt(startHeight, targetHeight);
+        fluidAnimator = ValueAnimator.ofInt(startHeight, currentHeight);
         fluidAnimator.setDuration(300);
         fluidAnimator.setInterpolator(new DecelerateInterpolator());
 

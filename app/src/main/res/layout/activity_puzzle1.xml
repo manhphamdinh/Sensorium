@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:clipChildren="false"
-    android:clipToPadding="false"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".Puzzle1Fragment">
+    android:clipToPadding="false">
 
     <com.example.blackbox.FluidView
         android:id="@+id/fluid"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
+    <!-- Bubbles -->
     <ImageView
         android:id="@+id/bubbleBottom"
         android:layout_width="150dp"
@@ -28,59 +28,80 @@
         android:layout_gravity="center_horizontal"
         android:alpha="0.5"/>
 
-    <RelativeLayout
+    <!-- Stable positioning layer -->
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/ll"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:clipChildren="false"
-        android:clipToPadding="false"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
+        <!-- RIGHT -->
         <ImageView
             android:id="@+id/imageView0"
             style="@style/boxInChallenge"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.9"
+            app:layout_constraintVertical_bias="0.5"
             android:backgroundTint="@color/puzzle1" />
 
+        <!-- LEFT -->
         <ImageView
             android:id="@+id/imageView1"
             style="@style/boxInChallenge"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.1"
+            app:layout_constraintVertical_bias="0.5"
             android:backgroundTint="@color/puzzle1" />
 
+        <!-- TOP -->
         <ImageView
             android:id="@+id/imageView2"
             style="@style/boxInChallenge"
-            android:layout_marginTop="30dp"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintVertical_bias="0.1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             android:backgroundTint="@color/puzzle1" />
 
+        <!-- BOTTOM -->
         <ImageView
             android:id="@+id/imageView3"
             style="@style/boxInChallenge"
-            android:layout_marginBottom="30dp"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintVertical_bias="0.9"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             android:backgroundTint="@color/puzzle1" />
 
+        <!-- ABOVE CENTER -->
         <ImageView
             android:id="@+id/imageView4"
             style="@style/boxInChallenge"
-            android:layout_above="@id/imageView0"
-            android:layout_centerHorizontal="true"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintVertical_bias="0.35"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             android:backgroundTint="@color/puzzle1" />
 
+        <!-- BELOW CENTER -->
         <ImageView
             android:id="@+id/imageView5"
             style="@style/boxInChallenge"
-            android:layout_below="@id/imageView0"
-            android:layout_centerHorizontal="true"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintVertical_bias="0.65"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             android:backgroundTint="@color/puzzle1" />
 
-    </RelativeLayout>
-
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </FrameLayout>

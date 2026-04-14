@@ -4,5 +4,8 @@
     <string name="prefCompletion">puzzle_completion</string>
     <string name="prefProgress">puzzle_progress</string>
     <string name="prefSolved">solved_boxes</string>
+    <string name="prefClock">hours</string>
+    <string name="prefCoins">coins</string>
+    <string name="prefHintsUsed">hints_used</string>
     <string name="panning_view_description">main_view</string>
 </resources>

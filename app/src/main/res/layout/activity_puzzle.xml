@@ -6,4 +6,36 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <!-- Nút Hint thu nhỏ (Góc trên phải trong màn hình chơi) -->
+    <LinearLayout
+        android:id="@+id/coinButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="4dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="12dp"
+        android:gravity="center_vertical"
+        android:clickable="true"
+        android:focusable="true">
+
+        <TextView
+            android:id="@+id/coinCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="10"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:layout_marginEnd="2dp" />
+
+        <ImageView
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:src="@drawable/sunny"
+            app:tint="#FFD700" />
+
+    </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

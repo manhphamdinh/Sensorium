@@ -13,6 +13,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 public class Puzzle6Fragment extends PuzzleBaseFragment {
 
@@ -35,6 +37,17 @@ public class Puzzle6Fragment extends PuzzleBaseFragment {
         screenshotBox = root.findViewById(R.id.imageView0);
 
         return root;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        setupCoinButton(requireActivity().getWindow().getDecorView().getRootView());
+        
+        // Re-apply progress
+        if (getCompletedThisRun().contains(0)) {
+            applyCurrentProgress(screenshotBox);
+        }
     }
 
     @Override
@@ -111,5 +124,3 @@ public class Puzzle6Fragment extends PuzzleBaseFragment {
         });
     }
 }
-
-//chạy màn 6 ở terminal: & "$env:LOCALAPPDATA\Android\Sdk\platform-tools\adb.exe" shell input keyevent 120

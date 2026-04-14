@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
 import java.util.ArrayList;
@@ -73,12 +74,13 @@ public class Puzzle8Fragment extends PuzzleBaseFragment {
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         for (int index : getCompletedThisRun()) {
             applyCurrentProgress(boxes[index]);
         }
+        setupCoinButton(requireActivity().getWindow().getDecorView().getRootView());
     }
 
     @Override

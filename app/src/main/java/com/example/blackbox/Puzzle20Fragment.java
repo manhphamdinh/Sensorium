@@ -8,10 +8,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
+
 public class Puzzle20Fragment extends PuzzleBaseFragment {
 
     private ImageView powerBox;
-
     private boolean screenWasOff = false;
 
     // SETUP
@@ -29,10 +31,19 @@ public class Puzzle20Fragment extends PuzzleBaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.activity_puzzle20, container, false);
-
         powerBox = root.findViewById(R.id.imageView0);
-
         return root;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        setupCoinButton(requireActivity().getWindow().getDecorView().getRootView());
+        
+        // Re-apply progress
+        if (getCompletedThisRun().contains(0)) {
+            applyCurrentProgress(powerBox);
+        }
     }
 
     @Override

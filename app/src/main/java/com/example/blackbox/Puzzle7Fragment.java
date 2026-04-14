@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -62,10 +63,13 @@ public class Puzzle7Fragment extends PuzzleBaseFragment {
         return root;
     }
 
+
     @Override
-    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        setupCoinButton(requireActivity().getWindow().getDecorView().getRootView());
+        
         int currentHour = getCurrentHour();
         boolean isMorning = currentHour < 12;
         int boxIndex = isMorning ? DAY_BOX_INDEX : NIGHT_BOX_INDEX;
