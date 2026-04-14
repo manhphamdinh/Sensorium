@@ -157,7 +157,7 @@ public class Puzzle10Fragment extends PuzzleBaseFragment {
                             Log.d("Puzzle10", "MÁY NGHE THẤY CHỮ: " + word);
                         }
 
-                        if (spokenText.contains("hộp đen") || spokenText.contains("hộp")) {
+                        if (spokenText.contains("blackbox") || spokenText.contains("black") || spokenText.contains("box")) {
                             Log.d("Puzzle10", "CHÍNH XÁC! GỌI ANIMATION QUA MÀN!");
                             updatePuzzle(speechBox);
 
