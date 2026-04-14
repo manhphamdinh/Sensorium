@@ -110,7 +110,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="top|end"
-        android:layout_margin="16dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginRight="15dp"
+
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:padding="4dp"
@@ -125,14 +127,14 @@
             android:layout_height="wrap_content"
             android:text="10"
             android:textColor="#FFD700"
-            android:textSize="16sp"
+            android:textSize="30sp"
             android:textStyle="bold"
             android:layout_marginEnd="4dp" />
 
         <ImageView
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:src="@drawable/sunny"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:src="@drawable/coin"
             app:tint="#FFD700"
             android:contentDescription="Coins" />
     </LinearLayout>
