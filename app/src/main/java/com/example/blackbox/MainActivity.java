@@ -178,9 +178,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void resetGame(View view) {
         new androidx.appcompat.app.AlertDialog.Builder(this)
-                .setTitle("Xác nhận Reset")
-                .setMessage("Hành động này sẽ xóa toàn bộ tiến trình chơi của bạn. Bạn có chắc chắn không?")
-                .setPositiveButton("Xóa hết", (dialog, which) -> {
+                .setTitle("Reset confirm")
+                .setMessage("This action will erase your progress entirely. Do you want to reset it?")
+                .setPositiveButton("Reset", (dialog, which) -> {
 
                     // Clear progress and completion
                     PuzzleCompletion.resetAllCompletion(this);
@@ -188,7 +188,7 @@ public class MainActivity extends AppCompatActivity {
 
                     recreate();
                 })
-                .setNegativeButton("Hủy", null)
+                .setNegativeButton("Cancel", null)
                 .show();
     }
 }

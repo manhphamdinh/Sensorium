@@ -165,7 +165,7 @@ public abstract class PuzzleBaseFragment extends Fragment {
         int puzzleId = getPuzzleId();
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle("Gợi ý (🪙 " + coins + " xu)");
+        builder.setTitle("Hints (🪙 " + coins + " coins)");
 
         String[] hintLabels = new String[3];
         for (int i = 0; i < 3; i++) {

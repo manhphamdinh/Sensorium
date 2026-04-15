@@ -77,6 +77,7 @@ public class Puzzle7Fragment extends PuzzleBaseFragment {
         checkAndResetClockIfNeeded();
         puzzleCompletedClock(boxIndex);
 
+        ImageView fluid = view.findViewById(R.id.fluid);
         ViewGroup root = view.findViewById(R.id.ll);
 
         // ====================== DEBUG FULL DAY/NIGHT ======================
@@ -99,9 +100,9 @@ public class Puzzle7Fragment extends PuzzleBaseFragment {
 
         // === Background theo buổi ===
         if (!isMorning) {
-            root.setBackgroundColor(getResources().getColor(R.color.bg, null));   // nền đen than
+            fluid.setBackgroundColor(getResources().getColor(R.color.bg, null));   // nền đen than
         } else {
-            root.setBackgroundColor(getResources().getColor(R.color.puzzle7translucent, null));
+            fluid.setBackgroundColor(getResources().getColor(R.color.puzzle7translucent, null));
         }
 
         // Xóa arc cũ để tránh chồng chéo

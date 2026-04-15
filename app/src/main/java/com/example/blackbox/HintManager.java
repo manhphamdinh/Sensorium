@@ -13,20 +13,21 @@ public class HintManager {
 
     // Cơ sở dữ liệu Hint cho các Level
     private static final String[][] HINTS_DATA = {
-        {"Dùng nút âm lượng", "Thử cắm sạc", "Xoay ngược điện thoại"}, // Level 1
-        {"Độ sáng màn hình", "Cảm biến ánh sáng", "Che camera trước"}, // Level 2
-        {"Lắc điện thoại", "Đặt máy xuống bàn", "Để im 5 giây"}, // Level 3
-        {"Cắm tai nghe", "Bật bluetooth", "Rút tai nghe"}, // Level 4
-        {"Chụp màn hình", "Nút nguồn", "Tăng âm lượng"}, // Level 5
-        {"Wifi đang bật", "Tắt mạng", "Chế độ máy bay"}, // Level 6
-        {"Pin yếu", "Cắm sạc nhanh", "Rút sạc"}, // Level 7
-        {"Dùng 2 ngón tay", "Chạm đa điểm", "Vuốt từ cạnh"}, // Level 8
-        {"Tìm trong cài đặt", "Thông tin ứng dụng", "Quyền truy cập"}, // Level 9
-        {"Micrô đang thu âm", "Nói thật to", "Thổi vào mic"}, // Level 10
-        {"Thời gian hệ thống", "Đổi múi giờ", "Chờ đến nửa đêm"}, // Level 11
-        {"Vị trí GPS", "Di chuyển 10m", "Tắt định vị"}, // Level 17
-        {"Gõ vào mặt sau", "Rung điện thoại", "Cảm biến tiệm cận"}, // Level 20
-        {"Kết nối USB", "Bật chế độ tối", "Thay đổi ngôn ngữ"} // Level 29
+        {"You completed one of them! Congrats!!", "Follow the flow of water.", "Try to rotate your phone."}, // Level 1
+        {"Why are there 2 boxes?", "It's sunny today. You should go out!", "You tone it down when in the dark."}, // Level 2
+        {"Notice the position.", "Up and down...", "It's all about audio."}, // Level 3
+        {"Do you see that?", "Do you here that?", "Did you cover that?"}, // Level 4
+        {"It is what it is.", "Is there another way?", "You have to turn it off because it may affect the _____'s signals."}, // Level 5
+        {"Look closely.", "Oh. Not that close.", "1...2...3...Pose"}, // Level 6
+        {"There are 2 same things on my screen.", "What time is it?", "24/7"}, // Level 7
+        {"Solve the other challenges and come back, you'll see it.", "It turned red. You spent a lot of time, huh?", "CHARGE ME, NOW!!!"}, // Level 8
+        {"Water surface with ripples.", "A Silent Voice - Koe no Katachi", "shhhhhh....."}, // Level 9
+        {"Hi!!!", "Google Assistant is my sister.", "How can I help you?"}, // Level 10
+        {"Time will answer everything.", "Light and dark.", "I love Matcha Mooncake."}, // Level 11
+        {"Yay!!!", "You might have been accidentally solve this challenge multiple times in the past.", "Shake it off is Taylor's best song ever."}, // Level 17
+        {"Something's on the screen, right?", "I need to take a break, bye.", "Power off!"}, // Level 20
+        {"This challenge is an exception.", "Don't touch the screen?", "Keep it for a while."}, // Level 29
+        {"I can feel the danger nearby.", "This challenge can be used to improve your health.", "Let's go for a walk, or maybe something faster."} // Level 15
     };
 
     private static int getHintIndex(int puzzleId) {
@@ -35,7 +36,7 @@ public class HintManager {
             case 4:  return 3; case 5:  return 4; case 6:  return 5;
             case 7:  return 6; case 8:  return 7; case 9:  return 8;
             case 10: return 9; case 11: return 10; case 17: return 11;
-            case 20: return 12; case 29: return 13;
+            case 20: return 12; case 29: return 13; case 15: return 14;
             default: return -1;
         }
     }
