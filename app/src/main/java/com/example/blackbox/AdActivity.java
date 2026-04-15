@@ -4,11 +4,14 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import androidx.annotation.OptIn;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.Player;
+import androidx.media3.common.PlaybackException;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.exoplayer.ExoPlayer;
 import androidx.media3.ui.PlayerView;
@@ -20,8 +23,11 @@ public class AdActivity extends AppCompatActivity {
 
     private ExoPlayer player;
     private PlayerView playerView;
+    private View staticAdLayout;
     private TextView skipTimer;
+    private ProgressBar loadingProgress;
     private CountDownTimer countDownTimer;
+    private boolean isTimerStarted = false;
 
     @OptIn(markerClass = UnstableApi.class)
     @Override
@@ -30,33 +36,53 @@ public class AdActivity extends AppCompatActivity {
         setContentView(R.layout.activity_ad);
 
         playerView = findViewById(R.id.player_view);
+        staticAdLayout = findViewById(R.id.static_ad_layout);
         skipTimer = findViewById(R.id.skip_timer);
+        loadingProgress = findViewById(R.id.loading_progress);
 
         player = new ExoPlayer.Builder(this).build();
         playerView.setPlayer(player);
+        player.setPlayWhenReady(true);
 
-        // Sử dụng một video mặc định nếu không có URL truyền vào
-        String videoUrl = getIntent().getStringExtra(EXTRA_VIDEO_URL);
-        if (videoUrl == null) {
-            // URL video demo
-            videoUrl = "https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4";
-        }
+        // Ưu tiên sử dụng file advertiser.mp4 bạn vừa thêm vào res/raw
+        Uri videoUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.advertiser);
 
-        MediaItem mediaItem = MediaItem.fromUri(Uri.parse(videoUrl));
+        MediaItem mediaItem = MediaItem.fromUri(videoUri);
         player.setMediaItem(mediaItem);
         player.prepare();
-        player.play();
 
         player.addListener(new Player.Listener() {
             @Override
             public void onPlaybackStateChanged(int playbackState) {
-                if (playbackState == Player.STATE_ENDED) {
+                if (playbackState == Player.STATE_READY) {
+                    loadingProgress.setVisibility(View.GONE);
+                    // Hiện Video Player và ẩn layout tĩnh
+                    playerView.setVisibility(View.VISIBLE);
+                    staticAdLayout.setVisibility(View.GONE);
+                    startAdTimer();
+                } else if (playbackState == Player.STATE_BUFFERING) {
+                    loadingProgress.setVisibility(View.VISIBLE);
+                } else if (playbackState == Player.STATE_ENDED) {
                     finishWithResult();
                 }
             }
-        });
 
-        // Đếm ngược 5 giây để có thể kết thúc (giả lập quảng cáo tối thiểu 5s)
+            @Override
+            public void onPlayerError(PlaybackException error) {
+                // Nếu video lỗi, quay lại hiện banner tĩnh để không hỏng app
+                loadingProgress.setVisibility(View.GONE);
+                playerView.setVisibility(View.GONE);
+                staticAdLayout.setVisibility(View.VISIBLE);
+                skipTimer.setText("Quảng cáo (Chế độ offline)...");
+                startAdTimer();
+            }
+        });
+    }
+
+    private void startAdTimer() {
+        if (isTimerStarted) return;
+        isTimerStarted = true;
+
         countDownTimer = new CountDownTimer(5000, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
@@ -65,7 +91,7 @@ public class AdActivity extends AppCompatActivity {
 
             @Override
             public void onFinish() {
-                skipTimer.setText("Bạn có thể đóng quảng cáo");
+                skipTimer.setText("Bấm để nhận thưởng 🪙");
                 skipTimer.setOnClickListener(v -> finishWithResult());
             }
         }.start();
@@ -77,13 +103,21 @@ public class AdActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        if (player != null) player.pause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (player != null) player.play();
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (player != null) {
-            player.release();
-        }
-        if (countDownTimer != null) {
-            countDownTimer.cancel();
-        }
+        if (player != null) player.release();
+        if (countDownTimer != null) countDownTimer.cancel();
     }
 }

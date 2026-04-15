@@ -16,7 +16,8 @@
         android:label="@string/app_name"
         android:roundIcon="@drawable/rounded"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="true">
 
         <activity
             android:name=".MainActivity"

@@ -1,14 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#000000">
+    android:background="#1A1A1A">
 
+    <!-- Lớp 1: Video Player -->
     <androidx.media3.ui.PlayerView
         android:id="@+id/player_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:keepScreenOn="true" />
+        android:keepScreenOn="true"
+        app:use_controller="false"
+        app:resize_mode="fill"
+        android:visibility="gone" />
+
+    <!-- Lớp 2: Ảnh quảng cáo Offline (Dùng làm dự phòng hoặc thay thế hoàn toàn) -->
+    <LinearLayout
+        android:id="@+id/static_ad_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="20dp"
+        android:visibility="visible">
+
+        <ImageView
+            android:id="@+id/ad_banner"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:src="@drawable/reddot"
+            android:scaleType="centerInside"
+            android:layout_marginBottom="20dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="BLACKBOX PREMIUM"
+            android:textColor="#FFFFFF"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Mở khóa tất cả màn chơi ngay hôm nay!"
+            android:textColor="#CCCCCC"
+            android:textSize="14sp"
+            android:layout_marginTop="8dp"
+            android:gravity="center" />
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/loading_progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone" />
 
     <TextView
         android:id="@+id/skip_timer"
@@ -20,6 +68,7 @@
         android:padding="8dp"
         android:textColor="#FFFFFF"
         android:textSize="16sp"
-        android:text="Quảng cáo sẽ kết thúc sau: 5s" />
+        android:text="Quảng cáo sẽ kết thúc sau: 5s"
+        android:elevation="10dp" />
 
 </FrameLayout>
